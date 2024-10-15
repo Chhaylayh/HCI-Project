@@ -1,15 +1,11 @@
-import { Text, View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import homeScreen from "./screens/HomeScreen";
 
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
-}
+export default function index() {
+    const Tab = createBottomTabNavigator();
+    return (
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={homeScreen} />
+        </Tab.Navigator>
+    );
+  }
