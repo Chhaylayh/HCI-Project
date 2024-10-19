@@ -50,13 +50,13 @@ export default function Login() {
       />
 
       {/* Log In Button */}
-      <Pressable style={styles.logInButton} onPress={handleLogin}>
+      <Pressable style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
 
       <Text style={[styles.label, { marginTop: 50 }]}>Don't have an account? </Text>
       {/* Sign Up Button */}
-      <Pressable style={styles.signUpButton} onPress={handleSignUp}>
+      <Pressable style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
     </View>
@@ -69,40 +69,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "darkblue", // Light background for the screen
+    backgroundColor: "white",
   },
   title: {
     fontSize: 30,
     marginBottom: 20,
     fontWeight: "bold",
-    color: "white",
+    color: "darkblue",
   },
   label: {
     alignSelf: "flex-start",
     fontSize: 18,
     marginBottom: 5,
-    color: "white",
+    color: "darkblue",
   },
   input: {
     width: "100%",
     padding: 10,
     marginBottom: 20,
-    borderColor: "gray",
+    borderColor: "darkblue",
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: "white",
   },
-  logInButton: {
-    backgroundColor: "green",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  signUpButton: {
-    backgroundColor: "red",
+  button: {
+    backgroundColor: "darkblue",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 5,
