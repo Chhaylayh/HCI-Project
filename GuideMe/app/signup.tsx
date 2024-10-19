@@ -17,7 +17,7 @@ export default function Login() {
 
     // Navigate to profile with the username passed as a parameter
     router.push({
-      pathname: '/profile',
+      pathname: '/home/dashboard',
       params: { username },
     });
   };
