@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { styles } from "./universalStyles";
+import { styles } from "../universalStyles";
 
 export default function Index() {
   const router = useRouter();

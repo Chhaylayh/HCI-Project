@@ -1,12 +1,18 @@
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
+import React from "react";
+import { useState } from "react";
+
+type IAuthContext = {
+  loggedIn: boolean,
+  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+}
+export const AuthContext = React.createContext<IAuthContext | undefined>(undefined);
 
 export default function RootLayout() {
+  const [loggedIn, setLoggedIn] = useState(false);
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="login" options={{title: "Log In"}}/>
-      <Stack.Screen name="signup" options={{title: "Sign Up"}}/>
-      <Stack.Screen name="home" options={{title: "Home"}}/>
-    </Stack>
+    <AuthContext.Provider value={{loggedIn, setLoggedIn}}>
+      <Slot />
+    </ AuthContext.Provider>
   );
 }
