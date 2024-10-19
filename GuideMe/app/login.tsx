@@ -72,14 +72,14 @@ const styles = StyleSheet.create({
     backgroundColor: "darkblue", // Light background for the screen
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     marginBottom: 20,
     fontWeight: "bold",
     color: "white",
   },
   label: {
     alignSelf: "flex-start",
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 5,
     color: "white",
   },

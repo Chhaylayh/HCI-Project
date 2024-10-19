@@ -5,12 +5,6 @@ import { useRouter } from "expo-router";
 export default function Index() {
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push({ pathname: '/login' });
-  };
-  const handleSignUp = () => {
-    router.push({ pathname: '/signup' });
-  };
   const renderButton = (title: string, onPress: () => void, bgColor: string) => (
     <Pressable style={[styles.button, { backgroundColor: bgColor, marginTop: 50 }]} onPress={onPress}>
       <Text style={styles.buttonText}>{title}</Text>
