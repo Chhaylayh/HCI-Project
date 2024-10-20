@@ -1,22 +1,24 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Text, View, TextInput, Pressable, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { styles } from "../universalStyles";
+import { AuthContext } from "../_layout";
 
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const authContext = useContext(AuthContext);
   const handleLogin = () => {
     // Simple validation
     if (username === "" || password === "") {
       Alert.alert("Error", "Please enter both username and password");
       return;
     }
-
     // Navigate to profile with the username passed as a parameter
-    router.push({
-      pathname: '/profile',
+    authContext?.setLoggedIn(true);
+    router.replace({
+      pathname: '/home/dashboard',
       params: { username },
     });
   };
@@ -27,10 +29,10 @@ export default function Login() {
   return (
     <View style={styles.container}>
       {/* Welcome Message */}
-      <Text style={styles.title}>Welcome! Please log in.</Text>
+      <Text style={styles.titleBlue}>Welcome! Please log in.</Text>
 
       {/* Username Label */}
-      <Text style={styles.label}>Username</Text>
+      <Text style={styles.inputLabel}>Username</Text>
       <TextInput
         placeholder="Enter your username"
         value={username}
@@ -40,7 +42,7 @@ export default function Login() {
       />
 
       {/* Password Label */}
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.inputLabel}>Password</Text>
       <TextInput
         placeholder="Enter your password"
         value={password}
@@ -54,7 +56,7 @@ export default function Login() {
         <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
 
-      <Text style={[styles.label, { marginTop: 50 }]}>Don't have an account? </Text>
+      <Text style={[styles.inputLabel, { marginTop: 50 }]}>Don't have an account? </Text>
       {/* Sign Up Button */}
       <Pressable style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
@@ -62,54 +64,3 @@ export default function Login() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "white",
-  },
-  title: {
-    fontSize: 30,
-    marginBottom: 20,
-    fontWeight: "bold",
-    color: "darkblue",
-  },
-  label: {
-    alignSelf: "flex-start",
-    fontSize: 18,
-    marginBottom: 5,
-    color: "darkblue",
-  },
-  input: {
-    width: "100%",
-    padding: 10,
-    marginBottom: 20,
-    borderColor: "darkblue",
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: "white",
-  },
-  button: {
-    backgroundColor: "darkblue",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  bottom: {
-    fontSize: 24,
-    marginBottom: 30,
-    fontWeight: "bold",
-    color: "white",
-  },
-});

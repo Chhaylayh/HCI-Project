@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
+import { styles } from "../universalStyles";
 
 export default function Index() {
   const router = useRouter();
@@ -13,27 +14,28 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>GuideMe</Text>
+    <View style={localStyles.container}>
+      <Text style={localStyles.title}>GuideMe</Text>
       {/* Log In Button */}
-      <Pressable style={[styles.logInButton, { marginTop: 150 }]} onPress={handleLogin}>
-        <Text style={styles.logInButtonText}>Log In</Text>
+      <Pressable style={[localStyles.logInButton, { marginTop: 150 }]} onPress={handleLogin}>
+        <Text style={styles.secondaryButtonText}>Log In</Text>
       </Pressable>
 
       {/* Sign Up Button */}
-      <Pressable style={[styles.signUpButton, { marginTop: 50 }]} onPress={handleSignUp}>
-        <Text style={styles.signUpButtonText}>Sign Up</Text>
+      <Pressable style={[localStyles.signUpButton, { marginTop: 50 }]} onPress={handleSignUp}>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "darkblue",
+    padding: 20,
   },
   title: {
     fontSize: 80,
@@ -58,14 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
   },
-  logInButtonText: {
-    color: "darkblue",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  signUpButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  bottom: {
+    marginBottom: 30,
+  }
 });
