@@ -26,7 +26,6 @@ export default function Projects() {
         newSuggestions.push(possibleSuggestion);
       }
     }
-    console.log(keys[0], newSuggestions);
     // display suggestions
     setSuggestions(newSuggestions);
   };
