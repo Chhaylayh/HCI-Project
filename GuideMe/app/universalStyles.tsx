@@ -8,6 +8,12 @@ export const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "white",
       },
+      pageContainer: {
+        padding: 20,
+        backgroundColor: "white",
+        width: "100%",
+        height: "100%"
+      },
       button: {
         backgroundColor: "darkblue",
         paddingVertical: 12,
@@ -57,4 +63,5 @@ export const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "darkblue",
       },
+      iconRow: {flexDirection:"row", justifyContent: "space-between"},
 })
