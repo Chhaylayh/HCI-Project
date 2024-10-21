@@ -1,14 +1,15 @@
 import { View, Text, TextInput, Pressable } from "react-native";
-import { styles } from "../universalStyles";
+import { styles } from "../../universalStyles";
 import { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tasks from "@/dbMocks/tasks";
 import { StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { router } from "expo-router";
 
-export default function Projects() {
+export default function Search() {
   const [searchText, setSearchText] = useState("");
-  const [suggestions, setSuggestions] = useState<String[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const keys = Object.keys(tasks);
 
   const search = () => {
@@ -23,12 +24,18 @@ export default function Projects() {
     for (let key in keys) {
       let possibleSuggestion = keys[key].toLowerCase();
       if (possibleSuggestion.includes(text.toLowerCase())) {
-        newSuggestions.push(possibleSuggestion);
+        newSuggestions.push(keys[key]);
       }
     }
     // display suggestions
     setSuggestions(newSuggestions);
   };
+
+  const onClickSuggestion = (suggestionText: string) => {
+    const suggestionId = tasks[suggestionText].id;
+    router.setParams({taskId: suggestionId});
+    router.push("/task")
+  }
 
   return (
     <View style={styles.pageContainer}>
@@ -46,9 +53,11 @@ export default function Projects() {
         </Pressable>
       </View>
       {suggestions.length > 0 && (
-        <View style={localStyles.searchSuggestionContainer}>
+        <View style={localStyles.searchSuggestionContainer} >
           {suggestions.map((sug, i) => (
-            <Text style={[localStyles.searchSuggestionText, i===0 ? {color: "darkblue"} : {}]} key={i}>{sug}</Text>
+            <Pressable key={i} onPress={()=>onClickSuggestion(sug)}>
+            <Text style={[localStyles.searchSuggestionText, i===0 ? {color: "darkblue"} : {}]}>{sug}</Text>
+            </Pressable>
           ))}
         </View>
       )}

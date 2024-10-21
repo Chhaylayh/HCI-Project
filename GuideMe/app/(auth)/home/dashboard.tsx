@@ -11,7 +11,7 @@ export default function Dashboard() {
       <Pressable
         style={[styles.button, { marginTop: 20 }]}
         onPress={() => {
-          router.push("/search");
+          router.push("/home/search");
         }}
       >
         <Text style={styles.buttonText}>Search</Text>

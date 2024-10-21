@@ -8,7 +8,7 @@ export default function TabLayout() {
     <Tabs>
       <Tabs.Screen name="dashboard" options={{ headerShown: false, title: "Home" }} />
       <Tabs.Screen name="projects" options={{ headerShown: false, title: "Projects" }} />
-      <Tabs.Screen name="userProfile" options={{ headerShown: false, title: "Profile" }} />
+      <Tabs.Screen name="search" options={{ headerShown: false, title: "Search" }} />
     </Tabs>
   );
 }
