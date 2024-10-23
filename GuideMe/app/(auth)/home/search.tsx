@@ -15,7 +15,7 @@ export default function Search() {
 
   const search = () => {
     if (searchText.trim() === "") return; // don't search if input is empty
-    
+
     let newSuggestions: string[] = [];
     for (let key in keys) {
       let possibleSuggestion = keys[key].toLowerCase();
@@ -62,6 +62,7 @@ export default function Search() {
             setIsSearched(false); // Reset suggestions when typing
           }}
           autoCapitalize="none"
+          onSubmitEditing={search}
           style={localStyles.textInput}
         />
         <Pressable onPress={() => search()}>
