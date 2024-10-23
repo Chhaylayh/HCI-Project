@@ -10,6 +10,7 @@ export default function TabLayout() {
   return (
     <Stack>
       <Stack.Screen name="home"/>
+      <Stack.Screen name="Task" options={{ title: "Tasks" }}/>
     </Stack>
   );
 }

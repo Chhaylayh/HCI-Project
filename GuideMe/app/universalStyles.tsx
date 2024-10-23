@@ -64,4 +64,33 @@ export const styles = StyleSheet.create({
         color: "darkblue",
       },
       iconRow: {flexDirection:"row", justifyContent: "space-between"},
+
+      pageContainerTasks: {
+        padding: 5,
+        backgroundColor: "darkblue",
+        color:"white",
+        width: "100%",
+       // height: "100%",
+        fontSize:30,
+        alignSelf:'center',
+      },
+      imageStyle: {
+        width: "90%",        // Width relative to the parent container
+        height: undefined,   // Automatically adjust the height
+        aspectRatio: 1,      // Maintain aspect ratio
+        padding: 10,          // Add a small amount of padding around the image
+        alignSelf: 'center',
+        resizeMode: 'contain',
+      },
+      
+      scrollContainer: {
+        flexGrow: 1,
+        padding: 5,  // Add padding inside the scrollable area
+      },
+      smallText: {
+        fontSize: 20,
+        marginBottom: 0,
+        color: "white",
+        alignSelf:'center',
+      },
 })
