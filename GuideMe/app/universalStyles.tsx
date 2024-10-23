@@ -64,4 +64,30 @@ export const styles = StyleSheet.create({
         color: "darkblue",
       },
       iconRow: {flexDirection:"row", justifyContent: "space-between"},
+      rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+      },
+      buttonLarge: {
+        width: 100,
+        height: 100,
+        marginBottom: 20,
+        backgroundColor: 'darkblue',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+      },
+      item: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 100,
+      },
+      itemText: {
+        fontSize: 16,
+        color: 'black',
+      },
 })
