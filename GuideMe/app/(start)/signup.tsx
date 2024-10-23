@@ -31,7 +31,7 @@ export default function Login() {
   return (
     <View style={styles.container}>
       {/* Welcome Message */}
-      <Text style={styles.titleBlue}>Get Started.</Text>
+      <Text style={styles.titleBlue}>Get Started!</Text>
 
       {/* Username Label */}
       <Text style={styles.inputLabel}>Username</Text>
