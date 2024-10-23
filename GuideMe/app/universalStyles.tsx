@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
       imageStyle: {
         width: "90%",        // Width relative to the parent container
         height: undefined,   // Automatically adjust the height
-        aspectRatio: 1,      // Maintain aspect ratio
+        aspectRatio: "3/2",      // Maintain aspect ratio
         padding: 20,          // Add a small amount of padding around the image
         alignSelf: 'center',
         resizeMode: 'contain',
@@ -92,6 +92,7 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         color: "white",
         alignSelf:'center',
+      },
       rowContainer: {
         flexDirection: 'row',
         alignItems: 'center',
