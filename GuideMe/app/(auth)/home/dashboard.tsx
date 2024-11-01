@@ -22,7 +22,7 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
   <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10 }]} >
     <Pressable
       onPress={() => {
-        router.push("/home/projects");
+        router.push({pathname:"/browseProjects", params: {app: title}});
       }}
     >
       <Image

@@ -1,10 +1,10 @@
 type Tasks = { [key: string]: Task };
-type taskStep = {
+export type TaskStep = {
   title: string;
   description: string;
   imageURL: string;
 };
-type Task = { id: string; steps: taskStep[] };
+type Task = { id: string; steps: TaskStep[] };
 let tasks: Tasks = {
   "How to set up VS Code": {
     id: "1",
