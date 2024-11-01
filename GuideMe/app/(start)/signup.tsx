@@ -1,31 +1,50 @@
 import { useContext, useState } from "react";
-import { Text, View, TextInput, Pressable, Alert, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  Pressable,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "../universalStyles";
 import { AuthContext } from "../_layout";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { app } from "@/firebase";
 
 export default function Login() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const authContext = useContext(AuthContext);
-  
+
   const handleSignUp = () => {
     // Simple validation
-    if (username === "" || password === "") {
-      Alert.alert("Error", "Please enter both username and password");
+    if (email === "" || password === "" || !email.includes('@')) {
+      Alert.alert("Error", "Please enter both email and password");
       return;
     }
-
-    authContext?.setLoggedIn(true);
-    // Navigate to profile with the username passed as a parameter
-    router.replace({
-      pathname: '/home/dashboard',
-      params: { username },
-    });
+    const auth = getAuth(app);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        const username = user.displayName;
+        // Navigate to profile with the username passed as a parameter
+        authContext?.setLoggedIn(user);
+        router.replace({
+          pathname: "/home/dashboard",
+          params: { username },
+        });
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Please try again");
+        console.error(error);
+      });
   };
   const handleLogin = () => {
-    router.push({ pathname: '/login' });
+    router.push({ pathname: "/login" });
   };
 
   return (
@@ -37,8 +56,8 @@ export default function Login() {
       <Text style={styles.inputLabel}>Username</Text>
       <TextInput
         placeholder="Enter your username"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
         autoCapitalize="none"
       />
@@ -58,7 +77,9 @@ export default function Login() {
         <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
 
-      <Text style={[styles.inputLabel, { marginTop: 50 }]}>Already have an account? </Text>
+      <Text style={[styles.inputLabel, { marginTop: 50 }]}>
+        Already have an account?{" "}
+      </Text>
       {/* Sign Up Button */}
       <Pressable style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>

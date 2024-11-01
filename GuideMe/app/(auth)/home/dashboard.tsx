@@ -1,6 +1,8 @@
 import { Pressable, Text, View, FlatList, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { styles } from "../../universalStyles";
+import { useContext } from "react";
+import { AuthContext } from "@/app/_layout";
 
 interface ItemProps {
   title: string;
@@ -36,11 +38,12 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
 );
 
 export default function Dashboard() {
-  const { username } = useLocalSearchParams();
+  const user = useContext(AuthContext);
+  const name = user?.loggedIn?.email?.split("@")[0];
 
   return (
     <View style={[styles.pageContainer, { paddingHorizontal: 20 }]}>
-      <Text style={[styles.titleBlue, { alignSelf: "center", marginTop: -20}]}>Welcome, {username}!</Text>
+      <Text style={[styles.titleBlue, { alignSelf: "center", marginTop: -20}]}>Welcome, {name}!</Text>
       
       {/* row for search button and text */}
       <View style={[styles.rowContainer]}>
