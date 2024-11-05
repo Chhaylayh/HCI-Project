@@ -1,7 +1,7 @@
 import { TaskStep } from "./tasks";
 
-type Projects = { [id: string]: Project };
-type Project = {
+export type Projects = { [id: string]: Project };
+export type Project = {
   app: string;
   title: string;
   published?: boolean;

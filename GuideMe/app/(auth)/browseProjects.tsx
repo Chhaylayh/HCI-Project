@@ -1,18 +1,49 @@
 import { View, Text, Pressable } from "react-native";
+import { type Project, type Projects as ProjectType} from "@/dbMocks/projects";
 import { styles } from "../universalStyles";
-import projects from "@/dbMocks/projects";
-import { router, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+} from "expo-router";
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  query,
+  QuerySnapshot,
+  where,
+} from "firebase/firestore";
+import { db } from "@/firebase";
+import { useState } from "react";
 
 export default function Projects() {
   const username = "emma";
   const { app } = useGlobalSearchParams();
-  let keys = Object.keys(projects);
+  const [projects, setProjects] = useState<ProjectType>({});
+  let querySnapshot;
   if (app) {
-    keys = keys.filter((key) => projects[key].app === app);
+    querySnapshot = getDocs(
+      query(collection(db, "projects"), where("app", "==", app))
+    ).then((result) => { 
+      const newData: ProjectType = {};
+      result.docs.forEach((doc) => (newData[doc.id]=doc.data() as Project));
+      setProjects(newData);         
+    });
+  } else {
+    querySnapshot = getDocs(
+      query(collection(db, "projects"))
+    ).then((result) => { 
+      const newData: ProjectType = {};
+      result.docs.forEach((doc) => (newData[doc.id]=doc.data() as Project));
+      setProjects(newData);         
+    });
   }
-  const navToProject = (id : string) => {
+
+  let keys = Object.keys(projects);
+  const navToProject = (id: string) => {
     router.push(`/project/${id}`);
-  }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.titleBlue}>Projects</Text>
