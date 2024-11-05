@@ -11,7 +11,8 @@ import { useRouter } from "expo-router";
 import { styles } from "../universalStyles";
 import { AuthContext } from "../_layout";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { app } from "@/firebase";
+import { app, db } from "@/firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
   const router = useRouter();
@@ -27,16 +28,26 @@ export default function Login() {
     }
     const auth = getAuth(app);
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         // Signed up
         const user = userCredential.user;
         const username = user.displayName;
+        try {
+          const docRef = await setDoc(doc(collection(db, "users"), user.uid), {
+            uid: user.uid,
+            username: user.email?.split("@")[0],
+            accountDate: new Date(),
+            inProgress: [],
+            contributed: [],
+            relevantApps: [],
+            score: 0,
+          });
+          console.log("Document written with ID: ", docRef);
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
         // Navigate to profile with the username passed as a parameter
         authContext?.setLoggedIn(user);
-        router.replace({
-          pathname: "/home/dashboard",
-          params: { username },
-        });
       })
       .catch((error) => {
         Alert.alert("Error", "Please try again");

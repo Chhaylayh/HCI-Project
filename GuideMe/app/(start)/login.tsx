@@ -32,10 +32,6 @@ export default function Login() {
       const username = user.displayName;
       // Navigate to profile with the username passed as a parameter
       authContext?.setLoggedIn(user);
-      /*router.replace({
-        pathname: "/home/dashboard",
-        params: { username },
-      });*/
     })
     .catch(() => {
       Alert.alert("Error", "Please try again");
