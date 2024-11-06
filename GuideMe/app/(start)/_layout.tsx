@@ -1,17 +1,20 @@
-import { router, Stack, Tabs } from 'expo-router';
-import { useContext } from 'react';
-import { AuthContext } from '../_layout';
+import { router, Stack, Tabs } from "expo-router";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../_layout";
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
-  if (authContext?.loggedIn) {
-    router.replace("/home")
-  }
+  useEffect(() => {
+    if (authContext?.loggedIn) {
+      router.replace("/home");
+    }
+  }, [authContext?.loggedIn]);
+
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }}/>
-      <Stack.Screen name="login" options={{ title: "Log In" }}/>
-      <Stack.Screen name="signup" options={{ title: "Sign Up" }}/>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ title: "Log In" }} />
+      <Stack.Screen name="signup" options={{ title: "Sign Up" }} />
     </Stack>
   );
 }

@@ -18,7 +18,6 @@ import { db } from "@/firebase";
 import { useEffect, useState } from "react";
 
 export default function Projects() {
-  const username = "emma";
   const { app } = useGlobalSearchParams();
   const [projects, setProjects] = useState<ProjectType>({});
   let querySnapshot;
