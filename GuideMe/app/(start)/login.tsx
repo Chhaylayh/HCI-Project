@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { app } from "@/firebase";
+import { auth } from "@/firebase";
 import {
   Text,
   View,
@@ -24,7 +24,6 @@ export default function Login() {
       Alert.alert("Error", "Please enter both email and password");
       return;
     }
-    const auth = getAuth(app);
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up
