@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { styles } from "../universalStyles";
 import { AuthContext } from "../_layout";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { app, db } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
@@ -26,7 +26,6 @@ export default function Login() {
       Alert.alert("Error", "Please enter both email and password");
       return;
     }
-    const auth = getAuth(app);
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         // Signed up
