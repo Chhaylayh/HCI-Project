@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { auth } from "@/firebase";
 import {
   Text,
@@ -10,14 +10,12 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "../universalStyles";
-import { AuthContext } from "../_layout";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const authContext = useContext(AuthContext);
   const handleLogin = () => {
     // Simple validation
     if (email === "" || password === "" || !email.includes("@")) {
@@ -26,11 +24,7 @@ export default function Login() {
     }
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed up
-      const user = userCredential.user;
-      const username = user.displayName;
-      // Navigate to profile with the username passed as a parameter
-      authContext?.setLoggedIn(user);
+      router.replace('/home/dashboard')
     })
     .catch(() => {
       Alert.alert("Error", "Please try again");

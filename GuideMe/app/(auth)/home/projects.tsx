@@ -14,29 +14,29 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { db } from "@/firebase";
-import { AuthContext } from "@/app/_layout";
+import { auth, db } from "@/firebase";
 import { useContext, useEffect, useState } from "react";
 
 export default function Projects() {
-  const authContext = useContext(AuthContext);
-  const username = authContext?.loggedIn?.email?.split("@")[0] || "";
-  const [inProgress, setInProgress] = useState<string[]>([]);
+  const user = auth.currentUser;
+  const username = user?.email?.split("@")[0] || "";
+  const [inProgress, setInProgress] = useState<string[][]>([]);
   useEffect(() => {
-    if (authContext?.loggedIn?.uid) {
-      const docRef = doc(collection(db, "users"), authContext?.loggedIn?.uid);
+    if (user?.uid) {
+      const docRef = doc(collection(db, "users"), user?.uid);
       getDoc(docRef).then((uDoc) => {
         if (uDoc.exists()) {
           const data = uDoc.data();
+          console.log(inProgress);
           const projectRef = doc(
             collection(db, "projects"),
-            data.inProgress[0]
+            typeof data.inProgress[0] === "string" ? data.inProgress[0] : data.inProgress[0].id
           );
           getDoc(projectRef).then((pDoc) => {
             if (pDoc.exists()) {
               const pData: ProjectType = pDoc.data() as ProjectType;
               if (pData) {
-                setInProgress([pData.title, data.inProgress[0]]);
+                setInProgress([...inProgress, [pData.title, typeof data.inProgress[0] === "string" ? data.inProgress[0] : data.inProgress[0].id]]);
               }
             } else {
               console.error("error: project not found");
@@ -47,7 +47,7 @@ export default function Projects() {
         }
       });
     }
-  }, [authContext?.loggedIn]);
+  }, [user]);
 
   const continueProject = (id: string) => {
     router.push(`/project/${id}`);
@@ -56,7 +56,7 @@ export default function Projects() {
   const createProject = async () => {
     const docRef = await setDoc(doc(collection(db, "projects")), {
       app: "VS Code",
-      author: authContext?.loggedIn?.uid,
+      author: user?.uid,
       title: "hello",
       steps: [
         {
@@ -75,9 +75,9 @@ export default function Projects() {
       {inProgress.length > 0 && (
         <Pressable
           style={styles.button}
-          onPress={() => continueProject(inProgress[1])}
+          onPress={() => continueProject(inProgress[0][1])}
         >
-          <Text style={styles.buttonText}>Continue {inProgress[0]}</Text>
+          <Text style={styles.buttonText}>Continue {inProgress[0][0]}</Text>
         </Pressable>
       )}
       <Pressable

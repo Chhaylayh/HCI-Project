@@ -1,14 +1,15 @@
+import { auth } from "@/firebase";
 import { router, Stack, Tabs } from "expo-router";
-import { useContext, useEffect } from "react";
-import { AuthContext } from "../_layout";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect } from "react";
 
 export default function TabLayout() {
-  const authContext = useContext(AuthContext);
-  useEffect(() => {
-    if (authContext?.loggedIn) {
+  onAuthStateChanged(auth, (user)=>{
+    if (user) {
       router.replace("/home");
     }
-  }, [authContext?.loggedIn]);
+  })
+    
 
   return (
     <Stack>

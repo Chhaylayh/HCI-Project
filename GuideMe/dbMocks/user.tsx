@@ -1,7 +1,7 @@
 type Users = { [username: string]: User };
-type User = {
-  accountDate?: Date,
-  inProgress: string[],
+export type User = {
+  accountDate?: number,
+  inProgress: (string|{id: string, step: number})[],
   contributed: string[],
   relevantApps: string[],
   score: number,

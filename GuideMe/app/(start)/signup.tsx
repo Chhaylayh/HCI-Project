@@ -1,24 +1,21 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   View,
   TextInput,
   Pressable,
   Alert,
-  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "../universalStyles";
-import { AuthContext } from "../_layout";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { auth, db } from "@/firebase";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const authContext = useContext(AuthContext);
 
   const handleSignUp = () => {
     // Simple validation
@@ -35,7 +32,7 @@ export default function Login() {
           const docRef = await setDoc(doc(collection(db, "users"), user.uid), {
             uid: user.uid,
             username: user.email?.split("@")[0],
-            accountDate: new Date(),
+            accountDate: new Date().getTime(),
             inProgress: [],
             contributed: [],
             relevantApps: [],
@@ -45,8 +42,7 @@ export default function Login() {
         } catch (e) {
           console.error("Error adding document: ", e);
         }
-        // Navigate to profile with the username passed as a parameter
-        authContext?.setLoggedIn(user);
+        router.replace('/home/dashboard')
       })
       .catch((error) => {
         Alert.alert("Error", "Please try again");

@@ -1,7 +1,11 @@
-import { Pressable, Text, View, FlatList, Image } from "react-native";
+import { Pressable, Text, View, FlatList, Image, Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { styles } from "../../universalStyles";
-import { auth } from "@/firebase";
+import { auth, db } from "@/firebase";
+import { useEffect, useState } from "react";
+import { collection, doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { User } from "@/dbMocks/user";
 
 interface ItemProps {
   title: string;
@@ -36,56 +40,37 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
   </View>
 );
 
-export default function Dashboard() {
+export default function Profile() {
   const user = auth.currentUser;
   const name = user?.email?.split("@")[0];
+  const [userData, setUserData] = useState<User>();
 
-  return (
+  useEffect(() => {
+    if (user?.uid) {
+      const docRef = doc(collection(db, "users"), user?.uid);
+      getDoc(docRef).then((uDoc) => {
+        if (uDoc.exists()) {
+          setUserData(uDoc.data() as User)
+        }
+      });
+    }
+  }, [user]);
+
+  return ( userData &&
     <View style={[styles.pageContainer, { paddingHorizontal: 20 }]}>
-      <Text style={[styles.titleBlue, { alignSelf: "center", marginTop: -20}]}>Welcome, {name}!</Text>
-      
-      {/* row for search button and text */}
-      <View style={[styles.rowContainer]}>
+      <Text style={[styles.titleBlue, { alignSelf: "center"}]}>{name}</Text>
+      {userData.accountDate && <Text style={[styles.itemText]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>}
+      {userData.accountDate && <Text style={[styles.itemText]}>{userData.score} Points</Text>}
         <Pressable
-          style={[styles.buttonLarge, { marginRight: 0 }]}
+          style={[styles.buttonLarge]}
           onPress={() => {
-            router.push("/home/search");
+            signOut(auth).then(()=>router.replace('/login')).catch((error) => {
+                Alert.alert("There was a problem signing you out. Please try again.")
+              })
           }}
         >
-          <Text style={styles.buttonText}>Search</Text>
+          <Text style={styles.buttonText}>Log Out</Text>
         </Pressable>
-        {/* light blue filler to guide the buttons */}
-        <View style={[styles.pageContainer, { marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
-          <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Have a specific issue?</Text>
-        </View>
-      </View>
-
-      {/* row for projects button and text */}
-      <View style={[styles.rowContainer]}>
-        <Pressable
-          style={[styles.buttonLarge, { marginRight: 0 }]}
-          onPress={() => {
-            router.push("/home/projects");
-          }}
-        >
-          <Text style={styles.buttonText}>Projects</Text>
-        </Pressable>
-        {/* light blue filler to guide the buttons */}
-        <View style={[styles.pageContainer, { marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
-          <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Start a project for an app.</Text>
-        </View>
-      </View>
-
-      {/* horizontal flatList */}
-      <Text style={[styles.titleBlue, { alignSelf: "center" }]}>Suggested apps:</Text>
-      <FlatList
-        data={DATA}
-        renderItem={({ item }) => <Item title={item.title} image={item.image} background={item.background} />}
-        keyExtractor={item => item.id}
-        horizontal
-        //showsHorizontalScrollIndicator={false}
-        //style={{ marginTop: 20 }}
-      />
     </View>
   );
 }

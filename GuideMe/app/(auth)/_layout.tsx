@@ -1,10 +1,9 @@
 import { router, Slot, Stack, Tabs } from "expo-router";
-import { useContext } from "react";
-import { AuthContext } from "../_layout";
+import { auth } from "@/firebase";
 
 export default function TabLayout() {
-  const authContext = useContext(AuthContext);
-  if (!authContext?.loggedIn) {
+  const user = auth.currentUser;
+  if (!user) {
     router.replace("/login");
   }
   return (

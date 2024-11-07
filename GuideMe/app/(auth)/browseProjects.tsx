@@ -7,15 +7,19 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import {
+  arrayUnion,
   collection,
+  doc,
   DocumentData,
   getDocs,
   query,
   QuerySnapshot,
+  updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { useEffect, useState } from "react";
+import users from "@/dbMocks/user";
 
 export default function Projects() {
   const { app } = useGlobalSearchParams();
@@ -45,6 +49,14 @@ export default function Projects() {
 
   let keys = Object.keys(projects);
   const navToProject = (id: string) => {
+    // add [id, 0] to database?
+    const user = auth.currentUser;
+    const userRef = doc(collection(db, "users"), user?.uid);
+
+    // Set the "capital" field of the city 'DC'
+    updateDoc(userRef, {
+      inProgress: arrayUnion({id:id, step:0})
+    });
     router.push(`/project/${id}`);
   };
   return (
