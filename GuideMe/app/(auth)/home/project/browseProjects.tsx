@@ -62,7 +62,7 @@ export default function Projects() {
   return (
     <View style={styles.container}>
       <Text style={styles.titleBlue}>Projects</Text>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         {keys.map((key, i) => (
           <Pressable
             style={styles.button}
