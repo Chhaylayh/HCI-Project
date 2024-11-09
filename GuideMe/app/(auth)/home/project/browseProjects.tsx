@@ -26,7 +26,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<ProjectType>({});
   let querySnapshot;
   useEffect(() => {
-    if (app) {
+    if (app && app !== "all") {
       querySnapshot = getDocs(
         query(collection(db, "projects"), where("app", "==", app))
       ).then((result) => {
@@ -34,7 +34,7 @@ export default function Projects() {
         result.docs.forEach((doc) => (newData[doc.id] = doc.data() as Project));
         setProjects(newData);
       });
-    } else {
+    } else if (app == "all") {
       querySnapshot = getDocs(query(collection(db, "projects"))).then(
         (result) => {
           const newData: ProjectType = {};
@@ -65,7 +65,7 @@ export default function Projects() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {keys.map((key, i) => (
           <Pressable
-            style={styles.button}
+            style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
             key={i}
           >
