@@ -1,56 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, Alert, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase';
 import { router } from 'expo-router';
 
 const CreateProjectTwo = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { projectName: initialProjectName, projectId } = route.params;
+  const { projectName: initialProjectName } = route.params;
   const [projectName, setProjectName] = useState(initialProjectName || '');
-  const [tasks, setTasks] = useState([]);
   const user = auth.currentUser;
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
-    try {
-      const tasksCollection = collection(db, 'tasks');
-      const tasksQuery = query(tasksCollection, where('projectId', '==', projectId));
-      const taskDocs = await getDocs(tasksQuery);
-      const taskList = taskDocs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTasks(taskList);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
+  const handleCreateProject = async () => {
+    if (!projectName.trim()) {
+      Alert.alert("Error", "Please enter a project name");
+      return;
     }
-  };
 
-  const handleAddTask = () => {
-    router.push({ pathname: "/createProjectThree", params: { projectId } });
+    try {
+      // Add the project to Firestore
+      await addDoc(collection(db, 'projects'), {
+        title: projectName,
+        author: user?.uid,
+        createdAt: new Date(),
+      });
+
+      Alert.alert("Success", "Project created successfully!");
+      router.push('/projects'); // Navigate back to projects page
+    } catch (error) {
+      console.error("Error creating project:", error);
+      Alert.alert("Error", "Failed to create project");
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{projectName} Project</Text>
-      <Text style={styles.subtitle}>Tasks</Text>
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.taskItem}>{item.title}</Text>}
-        ListEmptyComponent={<Text style={styles.noTasks}>No tasks added yet.</Text>}
-      />
+      <Text style={styles.title}>{projectName}Testing</Text>
 
-      <Pressable style={styles.addButton} onPress={handleAddTask}>
+      <Text style={styles.subtitle}>Start by adding a task to your project</Text>
+
+      <Pressable style={styles.addButton} onPress={() => router.push("/newProjectTask")}>
         <Text style={styles.addButtonText}>Add a Task</Text>
       </Pressable>
 
-      <Pressable style={styles.nextButton} onPress={() => router.push("/NewProjectTask")}>
-        <Text style={styles.nextButtonText}>Next</Text>
+      <Pressable style={styles.nextButton} onPress={() => Alert.alert("Project Published")}>
+        <Text style={styles.nextButtonText}>Publish Project</Text>
       </Pressable>
     </View>
   );
@@ -96,7 +92,7 @@ const styles = StyleSheet.create({
     width: 400, // Same fixed width as addButton
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 100,
+    
   },
   nextButtonText: {
     color: '#fff',

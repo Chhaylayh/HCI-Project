@@ -77,8 +77,8 @@ export default function CreateProject() {
                 </Picker>
             </View>
 
-            <Pressable style={styles.nextButton} onPress={handleCreateProject}>
-                <Text style={styles.nextButtonText}>Next ➞</Text>
+            <Pressable style={styles.nextButton} onPress={() => router.push("/createProjectTwo")}>
+                <Text style={styles.nextButtonText}>Next</Text>
             </Pressable>
         </View>
     );
