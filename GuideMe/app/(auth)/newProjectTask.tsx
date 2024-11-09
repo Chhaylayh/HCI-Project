@@ -8,6 +8,8 @@ import {
   Alert,
   ScrollView,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { collection, addDoc } from "firebase/firestore";
@@ -127,27 +129,32 @@ const NewProjectTask = () => {
       </Pressable>
 
       <Modal
-        visible={descriptionModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setDescriptionModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalHeader}>Enter Description</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={tempDescription}
-              onChangeText={setTempDescription}
-              placeholder="Add a description"
-              multiline={true}
-            />
-            <Pressable style={styles.saveButton} onPress={saveDescription}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+  visible={descriptionModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={() => setDescriptionModalVisible(false)}
+>
+  <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={styles.modalContainer}
+  >
+    <View style={styles.modalContent}>
+      <Text style={styles.modalHeader}>Enter Description</Text>
+      <TextInput
+        style={styles.modalInput}
+        value={tempDescription}
+        onChangeText={setTempDescription}
+        placeholder="Add a description"
+        multiline={true}
+        autoFocus={true} 
+      />
+      <Pressable style={styles.saveButton} onPress={saveDescription}>
+        <Text style={styles.saveButtonText}>Save</Text>
+      </Pressable>
+    </View>
+  </KeyboardAvoidingView>
+</Modal>
+
     </ScrollView>
   );
 };
@@ -216,40 +223,41 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: "80%",
-    backgroundColor: "white",
+    width: '90%', 
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   modalHeader: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 15,
   },
   modalInput: {
-    width: "100%",
+    width: '100%',
+    minHeight: 100, 
     borderWidth: 1,
-    borderColor: "#0000b0",
+    borderColor: '#0000b0',
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     marginBottom: 20,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   saveButton: {
-    backgroundColor: "#0000b0",
+    backgroundColor: '#0000b0',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   saveButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
   },
 });
