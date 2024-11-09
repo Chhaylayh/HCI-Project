@@ -114,20 +114,27 @@ export default function Projects() {
         </Pressable>
       )}
 
-      <Pressable
-        style={[
-          styles.button,
-          { backgroundColor: "#0E0A68", marginBottom: 30 },
-        ]}
-        onPress={() =>
+      {/* Start Project Button */}
+    <Pressable
+      style={[
+        styles.button,
+        {
+          backgroundColor: inProgress.length > 0 ? "#CCCCCC" : "#0E0A68", // Gray out if disabled
+          marginBottom: 30,
+        },
+      ]}
+      onPress={() => {
+        if (inProgress.length === 0) {
           router.push({
             pathname: "/home/project/browseProjects",
             params: { app: "all" },
-          })
+          });
         }
-      >
-        <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
-      </Pressable>
+      }}
+      disabled={inProgress.length > 0} // Disable button click if there's a project in progress
+    >
+      <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
+    </Pressable>
 
       <Pressable
         style={[

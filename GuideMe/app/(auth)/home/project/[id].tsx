@@ -143,8 +143,13 @@ export default function Project() {
               <Pressable style={[styles.buttonLarge, { marginTop: 10, marginRight: 60, width: 150 }]} onPress={() => router.push("/home")}>
                 <Text style={styles.buttonText}>Home</Text>
               </Pressable>
-              <Pressable style={[styles.buttonLarge, { marginTop: 10, width: 150 }]} onPress={handleNextStep}>
-                <Text style={styles.buttonText}>{currentStepIndex === project.steps.length - 1 ? "Finish Project" : "Next Step"}</Text>
+              <Pressable 
+                style={[ styles.buttonLarge, { marginTop: 10, width: 150, backgroundColor: stepCompleted ? "blue" : "grey" }]} // grey out until complete. ZO 
+                onPress={handleNextStep}
+                >
+                <Text style={styles.buttonText}>
+                  {currentStepIndex === project.steps.length - 1 ? "Finish Project" : "Next Step"}
+                </Text>
               </Pressable>
             </View>
           </View>
