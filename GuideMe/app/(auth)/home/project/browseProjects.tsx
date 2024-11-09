@@ -60,7 +60,7 @@ export default function Projects() {
 
   // filter out finished projects from projects list. ZO
   const filteredProjects = Object.keys(projects).filter(
-    (key) => !finishedProjectIds.includes(key)
+    (key) => !finishedProjectIds.includes(key) && projects[key].published
   );
 
   const navToProject = (id: string) => {

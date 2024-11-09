@@ -40,7 +40,7 @@ const CreateProjectTwo = () => {
     }
     try {
       Alert.alert("Success", "Project created successfully!");
-      router.push("/home/project/projects"); // Navigate back to projects page
+      router.push("createdProject"); // Navigate back to projects page
     } catch (error) {
       console.error("Error creating project:", error);
     }
