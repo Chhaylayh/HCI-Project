@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
@@ -11,6 +11,9 @@ const NewProjectTask = () => {
   const { projectId } = route.params;
   const [taskTitle, setTaskTitle] = useState('');
   const [steps, setSteps] = useState([{ title: '', description: '', image: null }]);
+  const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(null);
+  const [tempDescription, setTempDescription] = useState('');
 
   const addStep = () => {
     setSteps([...steps, { title: '', description: '', image: null }]);
@@ -20,6 +23,19 @@ const NewProjectTask = () => {
     const updatedSteps = [...steps];
     updatedSteps[index][key] = value;
     setSteps(updatedSteps);
+  };
+
+  const openDescriptionModal = (index) => {
+    setCurrentStepIndex(index);
+    setTempDescription(steps[index].description);
+    setDescriptionModalVisible(true);
+  };
+
+  const saveDescription = () => {
+    if (currentStepIndex !== null) {
+      updateStep(currentStepIndex, 'description', tempDescription);
+    }
+    setDescriptionModalVisible(false);
   };
 
   const handleCreateTask = async () => {
@@ -65,12 +81,14 @@ const NewProjectTask = () => {
             placeholder="Step title"
           />
           <Text style={styles.label}>Description:</Text>
-          <TextInput
-            style={styles.input}
-            value={step.description}
-            onChangeText={(text) => updateStep(index, 'description', text)}
-            placeholder="Add a description"
-          />
+          <Pressable onPress={() => openDescriptionModal(index)}>
+            <TextInput
+              style={styles.input}
+              value={step.description}
+              editable={false}
+              placeholder="Add a description"
+            />
+          </Pressable>
           <Pressable style={styles.imageButton} onPress={() => Alert.alert("Add Image", "Feature to add an image will be implemented here.")}>
             <Ionicons name="image-outline" size={20} color="blue" />
             <Text style={styles.imageButtonText}>{step.image ? "Screenshot.png" : "Add an image"}</Text>
@@ -81,6 +99,30 @@ const NewProjectTask = () => {
       <Pressable style={styles.createButton} onPress={handleCreateTask}>
         <Text style={styles.createButtonText}>Create Task</Text>
       </Pressable>
+
+      
+      <Modal
+        visible={descriptionModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDescriptionModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeader}>Enter Description</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={tempDescription}
+              onChangeText={setTempDescription}
+              placeholder="Add a description"
+              multiline={true}
+            />
+            <Pressable style={styles.saveButton} onPress={saveDescription}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -89,10 +131,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#fff',
-  },
-  backText: {
-    color: 'blue',
-    marginBottom: 10,
   },
   header: {
     fontSize: 28,
@@ -136,12 +174,6 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontSize: 16,
   },
-  addStepText: {
-    color: 'blue',
-    fontSize: 16,
-    textAlign: 'center',
-    marginVertical: 20,
-  },
   createButton: {
     backgroundColor: '#0000b0',
     borderRadius: 5,
@@ -152,6 +184,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalInput: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#0000b0',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 20,
+    textAlignVertical: 'top',
+  },
+  saveButton: {
+    backgroundColor: '#0000b0',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
