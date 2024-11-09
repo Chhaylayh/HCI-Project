@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import { View, Text, Image, ScrollView, Pressable, Alert } from "react-native";
 import { styles } from "../../../universalStyles";
 import { useGlobalSearchParams, useLocalSearchParams, router } from "expo-router";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -125,7 +125,10 @@ export default function Project() {
     }
   };
 
-  return (
+  if (project && project?.steps.length < 1) {
+    Alert.alert("Project not found");
+    router.back();
+  } else return (
     project && (
       <View style={styles.pageContainer}>
         <Text style={[styles.titleBlue, { color: "black", textAlign: "center", fontSize: 50 }]}>{project.title}</Text>
