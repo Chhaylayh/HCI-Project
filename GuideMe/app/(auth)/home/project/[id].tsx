@@ -104,9 +104,11 @@ export default function Project() {
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        const updatedFinishedProjects = userData?.finishedProjects
-          ? [...userData.finishedProjects, { id }]
-          : [{ id }]; // find finishedProjects and add project id. ZO
+        // check if finishedProject already exists. if so, do not add duplicate. ZO
+        const isAlreadyFinished = userData?.finishedProjects?.some((p: { id: string }) => p.id === id);
+        const updatedFinishedProjects = isAlreadyFinished
+        ? userData.finishedProjects
+        : [...(userData.finishedProjects || []), { id }]; // find finishedProjects and add project id. ZO
 
         const updatedInProgress = userData?.inProgress?.filter(
           (p: { id: string }) => p.id !== id

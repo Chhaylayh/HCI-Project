@@ -1,53 +1,68 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { type Project, type Projects as ProjectType } from "@/dbMocks/projects";
 import { styles } from "../../../universalStyles";
-import {
-  router,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-} from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import {
   arrayUnion,
   collection,
   doc,
-  DocumentData,
   getDocs,
-  query,
-  QuerySnapshot,
+  getDoc,
   updateDoc,
+  query,
   where,
 } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useEffect, useState } from "react";
-import users from "@/dbMocks/user";
 
 export default function Projects() {
   const { app } = useGlobalSearchParams();
   const [projects, setProjects] = useState<ProjectType>({});
-  let querySnapshot;
-  useEffect(() => {
-    if (app && app !== "all") {
-      querySnapshot = getDocs(
-        query(collection(db, "projects"), where("app", "==", app))
-      ).then((result) => {
-        const newData: ProjectType = {};
-        result.docs.forEach((doc) => (newData[doc.id] = doc.data() as Project));
-        setProjects(newData);
-      });
-    } else if (app == "all") {
-      querySnapshot = getDocs(query(collection(db, "projects"))).then(
-        (result) => {
-          const newData: ProjectType = {};
-          result.docs.forEach(
-            (doc) => (newData[doc.id] = doc.data() as Project)
-          );
-          setProjects(newData);
-        }
-      );
-    }
-  });
+  const [finishedProjectIds, setFinishedProjectIds] = useState<string[]>([]);
 
-  let keys = Object.keys(projects);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      let result;
+
+      if (app && app !== "all") {
+        result = await getDocs(
+          query(collection(db, "projects"), where("app", "==", app))
+        );
+      } else {
+        result = await getDocs(collection(db, "projects"));
+      }
+
+      const newData: ProjectType = {};
+      result.docs.forEach((doc) => {
+        newData[doc.id] = doc.data() as Project;
+      });
+      setProjects(newData);
+    };
+
+    const fetchUserFinishedProjects = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(collection(db, "users"), user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const finishedProjects = userData.finishedProjects || [];
+          // fetch the finishedProjects and store them in map for filtering. ZO
+          setFinishedProjectIds(finishedProjects.map((p: { id: string }) => p.id));
+        }
+      }
+    };
+
+    fetchProjects();
+    fetchUserFinishedProjects();
+  }, [app]);
+
+  // filter out finished projects from projects list. ZO
+  const filteredProjects = Object.keys(projects).filter(
+    (key) => !finishedProjectIds.includes(key)
+  );
+
   const navToProject = (id: string) => {
     // add [id, 0] to database?
     const user = auth.currentUser;
@@ -59,11 +74,12 @@ export default function Projects() {
     });
     router.push(`/home/project/${id}`);
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.titleBlue}>Projects</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {keys.map((key, i) => (
+        {filteredProjects.map((key, i) => (
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
