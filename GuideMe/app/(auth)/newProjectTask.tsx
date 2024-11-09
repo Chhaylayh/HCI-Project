@@ -1,22 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView, Modal } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/firebase';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  Modal,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useRoute, useNavigation } from "@react-navigation/native";
 
 const NewProjectTask = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { projectId } = route.params;
-  const [taskTitle, setTaskTitle] = useState('');
-  const [steps, setSteps] = useState([{ title: '', description: '', image: null }]);
+  const [taskTitle, setTaskTitle] = useState("");
+  const [steps, setSteps] = useState([
+    { title: "", description: "", image: null },
+  ]);
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(null);
-  const [tempDescription, setTempDescription] = useState('');
+  const [tempDescription, setTempDescription] = useState("");
 
   const addStep = () => {
-    setSteps([...steps, { title: '', description: '', image: null }]);
+    setSteps([...steps, { title: "", description: "", image: null }]);
   };
 
   const updateStep = (index, key, value) => {
@@ -33,7 +44,7 @@ const NewProjectTask = () => {
 
   const saveDescription = () => {
     if (currentStepIndex !== null) {
-      updateStep(currentStepIndex, 'description', tempDescription);
+      updateStep(currentStepIndex, "description", tempDescription);
     }
     setDescriptionModalVisible(false);
   };
@@ -45,7 +56,7 @@ const NewProjectTask = () => {
     }
 
     try {
-      const taskDoc = await addDoc(collection(db, 'tasks'), {
+      const taskDoc = await addDoc(collection(db, "tasks"), {
         title: taskTitle,
         steps,
         projectId,
@@ -77,21 +88,36 @@ const NewProjectTask = () => {
           <TextInput
             style={styles.input}
             value={step.title}
-            onChangeText={(text) => updateStep(index, 'title', text)}
+            onChangeText={(text) => updateStep(index, "title", text)}
             placeholder="Step title"
           />
           <Text style={styles.label}>Description:</Text>
-          <Pressable onPress={() => openDescriptionModal(index)}>
+          <Pressable
+            onPress={() => openDescriptionModal(index)}
+            style={styles.pressableInput}
+          >
             <TextInput
               style={styles.input}
               value={step.description}
-              editable={false}
               placeholder="Add a description"
+              editable={false}
+              pointerEvents="none"
             />
           </Pressable>
-          <Pressable style={styles.imageButton} onPress={() => Alert.alert("Add Image", "Feature to add an image will be implemented here.")}>
+
+          <Pressable
+            style={styles.imageButton}
+            onPress={() =>
+              Alert.alert(
+                "Add Image",
+                "Feature to add an image will be implemented here."
+              )
+            }
+          >
             <Ionicons name="image-outline" size={20} color="blue" />
-            <Text style={styles.imageButtonText}>{step.image ? "Screenshot.png" : "Add an image"}</Text>
+            <Text style={styles.imageButtonText}>
+              {step.image ? "Screenshot.png" : "Add an image"}
+            </Text>
           </Pressable>
         </View>
       ))}
@@ -100,7 +126,6 @@ const NewProjectTask = () => {
         <Text style={styles.createButtonText}>Create Task</Text>
       </Pressable>
 
-      
       <Modal
         visible={descriptionModalVisible}
         animationType="slide"
@@ -130,11 +155,15 @@ const NewProjectTask = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+  },
+  pressableInput: {
+    ...StyleSheet.flatten([this.input]),
+    backgroundColor: "transparent",
   },
   header: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   label: {
@@ -143,84 +172,84 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#0000b0',
+    borderColor: "#0000b0",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     marginBottom: 10,
   },
   stepContainer: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
   },
   stepTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   imageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#0000b0',
+    borderColor: "#0000b0",
     borderRadius: 5,
     padding: 10,
     marginTop: 10,
   },
   imageButtonText: {
     marginLeft: 10,
-    color: 'blue',
+    color: "blue",
     fontSize: 16,
   },
   createButton: {
-    backgroundColor: '#0000b0',
+    backgroundColor: "#0000b0",
     borderRadius: 5,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   createButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
+    width: "80%",
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalHeader: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
   },
   modalInput: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
-    borderColor: '#0000b0',
+    borderColor: "#0000b0",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     marginBottom: 20,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   saveButton: {
-    backgroundColor: '#0000b0',
+    backgroundColor: "#0000b0",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   saveButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
 });
