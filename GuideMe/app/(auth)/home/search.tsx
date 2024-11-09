@@ -71,7 +71,7 @@ export default function Search() {
       </View>
 
       {/* Suggestions */}
-      {isSearched && suggestions.length > 0 && (
+      {isSearched && suggestions.length > 0 ? (
         <ScrollView style={localStyles.suggestionsContainer}>
           {suggestions.map((sug, i) => (
             <Pressable
@@ -90,7 +90,7 @@ export default function Search() {
             </View>
           ))}
         </ScrollView>
-      )}
+      ) : <Text style={styles.itemText}>Search for an app or task you're having trouble with!</Text>}
 
       {/* No Results */}
       {isSearched && suggestions.length === 0 && (
