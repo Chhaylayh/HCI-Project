@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { type Project, type Projects as ProjectType } from "@/dbMocks/projects";
-import { styles } from "../universalStyles";
+import { styles } from "../../../universalStyles";
 import {
   router,
   useGlobalSearchParams,
@@ -55,22 +55,24 @@ export default function Projects() {
 
     // Set the "capital" field of the city 'DC'
     updateDoc(userRef, {
-      inProgress: arrayUnion({id:id, step:0})
+      inProgress: arrayUnion({ id: id, step: 0 }),
     });
-    router.push(`/project/${id}`);
+    router.push(`/home/project/${id}`);
   };
   return (
     <View style={styles.container}>
       <Text style={styles.titleBlue}>Projects</Text>
-      {keys.map((key, i) => (
-        <Pressable
-          style={styles.button}
-          onPress={() => navToProject(key)}
-          key={i}
-        >
-          <Text style={styles.buttonText}>{projects[key].title}</Text>
-        </Pressable>
-      ))}
+      <ScrollView>
+        {keys.map((key, i) => (
+          <Pressable
+            style={styles.button}
+            onPress={() => navToProject(key)}
+            key={i}
+          >
+            <Text style={styles.buttonText}>{projects[key].title}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
     </View>
   );
 }

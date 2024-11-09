@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { styles } from "../../universalStyles";
+import { styles } from "../../../universalStyles";
 import users from "@/dbMocks/user";
 import projects from "@/dbMocks/projects";
 import { router } from "expo-router";
@@ -42,7 +42,7 @@ export default function Projects() {
   }, [user]);
 
   const continueProject = (id: string) => {
-    router.push(`/project/${id}`);
+    router.push(`/home/project/${id}`);
   };
 
   const createProject = async () => {
@@ -82,7 +82,7 @@ export default function Projects() {
       
       <Pressable
         style={styles.button}
-        onPress={() => router.push("/browseProjects")}
+        onPress={() => router.push("/home/project/browseProjects")}
       >
         <Text style={styles.buttonText}>Start new project</Text>
       </Pressable>

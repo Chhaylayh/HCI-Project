@@ -23,7 +23,7 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
   <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10 }]} >
     <Pressable
       onPress={() => {
-        router.push({pathname:"/browseProjects", params: {app: title}});
+        router.push({pathname:"/home/project/browseProjects", params: {app: title}});
       }}
     >
       <Image
@@ -65,7 +65,7 @@ export default function Dashboard() {
         <Pressable
           style={[styles.buttonLarge, { marginRight: 0 }]}
           onPress={() => {
-            router.push("/home/projects");
+            router.push("/home/project/projects");
           }}
         >
           <Text style={styles.buttonText}>Projects</Text>
