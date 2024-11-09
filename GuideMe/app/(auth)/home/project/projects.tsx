@@ -87,10 +87,6 @@ export default function Projects() {
         <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
       </Pressable>
 
-      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]}>
-        <Text style={{ color: "white", fontSize: 20 }}>Scoreboard</Text>
-      </Pressable>
-
     </View>
   );
 }
