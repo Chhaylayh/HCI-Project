@@ -37,7 +37,6 @@ export default function CreateProject() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.backButton}>Back</Text>
 
             <Text style={styles.title}>Create a Project</Text>
 
