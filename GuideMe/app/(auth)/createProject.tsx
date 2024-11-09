@@ -55,9 +55,8 @@ export default function CreateProject() {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.backButton}>Back</Text>
+    return (
+        <View style={styles.container}>
 
       <Text style={styles.title}>Create a Project</Text>
 
@@ -98,11 +97,11 @@ export default function CreateProject() {
         </Picker>
       </View>
 
-      <Pressable style={styles.nextButton} onPress={handleCreateProject}>
-        <Text style={styles.nextButtonText}>Next ➞</Text>
-      </Pressable>
-    </View>
-  );
+            <Pressable style={styles.nextButton} onPress={() => router.push("/createProjectTwo")}>
+                <Text style={styles.nextButtonText}>Next</Text>
+            </Pressable>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

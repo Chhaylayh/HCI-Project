@@ -12,7 +12,7 @@ export default function Projects() {
   const user = auth.currentUser;
   const username = user?.email?.split("@")[0] || "";
   const [inProgress, setInProgress] = useState<string[][]>([]);
-  
+
   useEffect(() => {
     if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
@@ -68,31 +68,27 @@ export default function Projects() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.titleBlue, { fontWeight: 'bold', fontSize: 36 }]}>Project</Text>
+    <View style={[styles.container, { paddingHorizontal: 20, paddingVertical: 40 }]}>
+
+      {/* Title */}
+      <Text style={{ fontWeight: "bold", fontSize: 50, textAlign: "center", marginBottom: 50 }}>Project</Text>
 
       {inProgress.length > 0 && (
-        <Pressable
-          style={styles.button}
-          onPress={() => continueProject(inProgress[0][1])}
-        >
-          <Text style={styles.buttonText}>Continue {inProgress[0][0]}</Text>
+        <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => continueProject(inProgress[0][1])}>
+          <Text style={{ color: "white", fontSize: 20 }}>Continue Project</Text>
         </Pressable>
       )}
-      
-      <Pressable
-        style={styles.button}
-        onPress={() => router.push("/home/project/browseProjects")}
-      >
-        <Text style={styles.buttonText}>Start new project</Text>
+
+      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/home/project/browseProjects")}>
+        <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
       </Pressable>
-      
-      <Pressable  style={styles.button} onPress={() => router.push("/createProject")} >
-        <Text style={styles.buttonText}>Create project</Text>
+
+      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/createProject")}>
+        <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
       </Pressable>
-      
-      <Pressable style={styles.button}>
-        <Text style={styles.buttonText}>Scoreboard</Text>
+
+      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]}>
+        <Text style={{ color: "white", fontSize: 20 }}>Scoreboard</Text>
       </Pressable>
 
     </View>
