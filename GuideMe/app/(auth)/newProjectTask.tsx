@@ -16,12 +16,12 @@ import { collection, addDoc, updateDoc, doc, arrayUnion } from "firebase/firesto
 import { db } from "@/firebase";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 const NewProjectTask = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { projectId } = route.params;
-  const [title, setTitle] = useState("");
   const [steps, setSteps] = useState({ title: "", description: "", imageURL: "" });
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
@@ -50,6 +50,15 @@ const NewProjectTask = () => {
     });
     router.back();
   };
+
+  const addImage = async () => {
+    const image = await ImagePicker.launchImageLibraryAsync()
+    if (!image.canceled) {
+      updateStep("imageURL", image.assets[0].fileName || "Added an Image")
+    } else {
+      Alert.alert("You did not select an image. Please try again.");
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -80,16 +89,11 @@ const NewProjectTask = () => {
 
           <Pressable
             style={styles.imageButton}
-            onPress={() =>
-              Alert.alert(
-                "Add Image",
-                "Feature to add an image will be implemented here."
-              )
-            }
+            onPress={() => addImage()}
           >
             <Ionicons name="image-outline" size={20} color="blue" />
             <Text style={styles.imageButtonText}>
-              {steps.imageURL ? "Screenshot.png" : "Add an image"}
+              {steps.imageURL ? steps.imageURL.substring(0, 40) : "Add an image"}
             </Text>
           </Pressable>
         </View>
