@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { styles } from "../../universalStyles";
+import { styles } from "../../../universalStyles";
 import users from "@/dbMocks/user";
 import projects from "@/dbMocks/projects";
 import { router } from "expo-router";
@@ -42,17 +42,23 @@ export default function Projects() {
   }, [user]);
 
   const continueProject = (id: string) => {
-    router.push(`/project/${id}`);
+    router.push(`/home/project/${id}`);
   };
 
   const createProject = async () => {
     const docRef = await setDoc(doc(collection(db, "projects")), {
       app: "VS Code",
       author: user?.uid,
-      title: "hello",
+      title: "not hello",
       steps: [
         {
           title: "start",
+          description: "sign up",
+          imageURL:
+            "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fen.opensuse.org%2Fimages%2Fa%2Fa8%2FVS_Code_screenshot.png&f=1&nofb=1&ipt=ca1d56bb9cd0fe1585b88221fa54be2cedac4a0bc76a2eddb49168e683468944&ipo=images",
+        },
+        {
+          title: "do not start",
           description: "sign up",
           imageURL:
             "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fen.opensuse.org%2Fimages%2Fa%2Fa8%2FVS_Code_screenshot.png&f=1&nofb=1&ipt=ca1d56bb9cd0fe1585b88221fa54be2cedac4a0bc76a2eddb49168e683468944&ipo=images",
@@ -73,7 +79,7 @@ export default function Projects() {
         </Pressable>
       )}
 
-      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/browseProjects")}>
+      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/home/project/browseProjects")}>
         <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
       </Pressable>
 
