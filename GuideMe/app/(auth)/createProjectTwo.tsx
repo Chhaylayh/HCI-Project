@@ -1,33 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase';
 import { router } from 'expo-router';
+import { TaskStep } from '@/dbMocks/tasks';
 
 const CreateProjectTwo = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { projectName: initialProjectName } = route.params;
-  const [projectName, setProjectName] = useState(initialProjectName || '');
+  const { projectId: initialProjectId } = route.params;
+  const [projectName, setProjectName] = useState('');
+  const [steps, setSteps] = useState<TaskStep[]>();
   const user = auth.currentUser;
 
-  const handleCreateProject = async () => {
-    if (!projectName.trim()) {
-      Alert.alert("Error", "Please enter a project name");
-      return;
-    }
+  useEffect(()=>{
+    const projectRef = doc(
+      collection(db, "projects"), initialProjectId);
+    getDoc(projectRef).then((pDoc) => {
+      if (pDoc.exists()) {
+          setProjectName(pDoc.data().projectName);
+          setSteps(pDoc.data().steps);
+      } else {
+        console.error("error: project not found");
+      }
+    });
+  })
 
+  const handleCreateProject = async () => {
+    if (!steps){
+       return;
+    }
     try {
-      // Add the project to Firestore
-      await addDoc(collection(db, 'projects'), {
-        title: projectName,
-        author: user?.uid,
-        createdAt: new Date(),
-      });
+      
 
       Alert.alert("Success", "Project created successfully!");
-      router.push('/projects'); // Navigate back to projects page
+      router.push('/home/project/projects'); // Navigate back to projects page
     } catch (error) {
       console.error("Error creating project:", error);
       Alert.alert("Error", "Failed to create project");
@@ -37,15 +45,17 @@ const CreateProjectTwo = () => {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.title}>{projectName}Testing</Text>
+      <Text style={styles.title}>{projectName}</Text>
 
       <Text style={styles.subtitle}>Start by adding a task to your project</Text>
 
-      <Pressable style={styles.addButton} onPress={() => router.push("/newProjectTask")}>
+      {steps?.map((step)=><Text>{step.title}</Text>)}
+
+      <Pressable style={styles.addButton} onPress={() => router.push({pathname:"/newProjectTask", params:{projectId: initialProjectId}})}>
         <Text style={styles.addButtonText}>Add a Task</Text>
       </Pressable>
 
-      <Pressable style={styles.nextButton} onPress={() => Alert.alert("Project Published")}>
+      <Pressable style={styles.nextButton} onPress={() => handleCreateProject()}>
         <Text style={styles.nextButtonText}>Publish Project</Text>
       </Pressable>
     </View>
