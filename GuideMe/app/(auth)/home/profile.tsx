@@ -1,11 +1,12 @@
-import { Pressable, Text, View, FlatList, Image, Alert } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { Pressable, Text, View, FlatList, Image, Alert, ScrollView } from "react-native";
+import { router, useGlobalSearchParams } from "expo-router";
 import { styles } from "../../universalStyles";
 import { auth, db } from "@/firebase";
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, query, where } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { User } from "@/dbMocks/user";
+import { type Project, type Projects as ProjectType } from "@/dbMocks/projects";
 
 interface ItemProps {
   title: string;
@@ -44,17 +45,68 @@ export default function Profile() {
   const user = auth.currentUser;
   const name = user?.email?.split("@")[0];
   const [userData, setUserData] = useState<User>();
+  const [finishedProjectIds, setFinishedProjectIds] = useState<string[]>([]);
+  const [projects, setProjects] = useState<ProjectType>({});
+  const { app } = useGlobalSearchParams();
 
   useEffect(() => {
     if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
+
       getDoc(docRef).then((uDoc) => {
         if (uDoc.exists()) {
           setUserData(uDoc.data() as User)
         }
       });
+      const fetchProjects = async () => {
+        let result;
+        if (app && app !== "all") {
+          result = await getDocs(
+            query(collection(db, "projects"), where("app", "==", app))
+          );
+        } else {
+          result = await getDocs(collection(db, "projects"));
+        }
+
+        const newData: ProjectType = {};
+        result.docs.forEach((doc) => {
+          newData[doc.id] = doc.data() as Project;
+        });
+        setProjects(newData);
+      };
+      const fetchUserFinishedProjects = async () => {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(collection(db, "users"), user.uid);
+          const userDoc = await getDoc(userRef);
+  
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const finishedProjects = userData.finishedProjects || [];
+            // fetch the finishedProjects and store them in map for filtering. ZO
+            setFinishedProjectIds(finishedProjects.map((p: { id: string }) => p.id));
+          }
+        }
+      };
+      fetchProjects();
+      fetchUserFinishedProjects();
     }
   }, [user]);
+  // filter out finished projects from projects list. ZO
+  const filteredProjects = Object.keys(projects).filter(
+    (key) => finishedProjectIds.includes(key)
+  );
+  const navToProject = (id: string) => {
+    // add [id, 0] to database?
+    const user = auth.currentUser;
+    const userRef = doc(collection(db, "users"), user?.uid);
+
+    // Set the "capital" field of the city 'DC'
+    updateDoc(userRef, {
+      inProgress: arrayUnion({ id: id, step: 0 }),
+    });
+    router.push(`/home/project/${id}`);
+  };
 
   return ( userData &&
     <View style={[styles.container, { paddingHorizontal: 20 }]}>
@@ -63,6 +115,18 @@ export default function Profile() {
       {userData.accountDate && <Text style={[styles.itemText]}>{userData.score} Points</Text>}
       {userData.accountDate && <Text style={[styles.itemText]}>{userData.finishedProjects.length} Finished Projects</Text>}
       {userData.accountDate && <Text style={[styles.itemText]}>{userData.contributed.length} Contributed Projects</Text>}
+      <Text style={[styles.titleBlue, { marginTop: 20 }]}>Finished Projects</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {filteredProjects.map((key, i) => (
+          <Pressable
+            style={[styles.button, {marginVertical: 10}]}
+            onPress={() => navToProject(key)}
+            key={i}
+          >
+            <Text style={styles.buttonText}>{projects[key].title}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
         <Pressable
           style={[styles.button, {position: "absolute", bottom: 20}]}
           onPress={() => {
