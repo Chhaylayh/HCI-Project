@@ -4,16 +4,7 @@ import users from "@/dbMocks/user";
 import projects from "@/dbMocks/projects";
 import { router } from "expo-router";
 import { Project as ProjectType } from "@/dbMocks/projects";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query, setDoc, where, } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useContext, useEffect, useState } from "react";
 
@@ -21,6 +12,7 @@ export default function Projects() {
   const user = auth.currentUser;
   const username = user?.email?.split("@")[0] || "";
   const [inProgress, setInProgress] = useState<string[][]>([]);
+  
   useEffect(() => {
     if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
@@ -77,7 +69,8 @@ export default function Projects() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleBlue}>Projects</Text>
+      <Text style={[styles.titleBlue, { fontWeight: 'bold', fontSize: 36 }]}>Project</Text>
+
       {inProgress.length > 0 && (
         <Pressable
           style={styles.button}
@@ -86,20 +79,22 @@ export default function Projects() {
           <Text style={styles.buttonText}>Continue {inProgress[0][0]}</Text>
         </Pressable>
       )}
+      
       <Pressable
         style={styles.button}
         onPress={() => router.push("/browseProjects")}
       >
         <Text style={styles.buttonText}>Start new project</Text>
       </Pressable>
-      <Pressable style={styles.button}>
-        <Text style={styles.buttonText} onPress={createProject}>
-          Create project
-        </Text>
+      
+      <Pressable  style={styles.button} onPress={() => router.push("/createProject")} >
+        <Text style={styles.buttonText}>Create project</Text>
       </Pressable>
+      
       <Pressable style={styles.button}>
         <Text style={styles.buttonText}>Scoreboard</Text>
       </Pressable>
+
     </View>
   );
 }
