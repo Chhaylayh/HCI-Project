@@ -12,95 +12,75 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 const NewProjectTask = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { projectId } = route.params;
-  const [taskTitle, setTaskTitle] = useState("");
-  const [steps, setSteps] = useState([
-    { title: "", description: "", image: null },
-  ]);
+  const [steps, setSteps] = useState({ title: "", description: "", imageURL: "" });
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
-  const [currentStepIndex, setCurrentStepIndex] = useState(null);
   const [tempDescription, setTempDescription] = useState("");
 
-  const addStep = () => {
-    setSteps([...steps, { title: "", description: "", image: null }]);
+
+  const updateStep = (key: "description" | "title" | "imageURL", value: string) => {
+    const updatedStep = {...steps};
+    updatedStep[key] = value;
+    setSteps(updatedStep);
   };
 
-  const updateStep = (index, key, value) => {
-    const updatedSteps = [...steps];
-    updatedSteps[index][key] = value;
-    setSteps(updatedSteps);
-  };
-
-  const openDescriptionModal = (index) => {
-    setCurrentStepIndex(index);
-    setTempDescription(steps[index].description);
+  const openDescriptionModal = () => {
+    setTempDescription(steps.description);
     setDescriptionModalVisible(true);
   };
 
   const saveDescription = () => {
-    if (currentStepIndex !== null) {
-      updateStep(currentStepIndex, "description", tempDescription);
-    }
+    updateStep("description", tempDescription);
     setDescriptionModalVisible(false);
   };
 
   const handleCreateTask = async () => {
-    if (!taskTitle.trim()) {
-      Alert.alert("Error", "Please enter a task title");
-      return;
-    }
-
-    try {
-      const taskDoc = await addDoc(collection(db, "tasks"), {
-        title: taskTitle,
-        steps,
-        projectId,
-        createdAt: new Date(),
-      });
-      Alert.alert("Success", "Task created successfully!");
-      navigation.goBack(); // Go back to CreateProjectTwo
-    } catch (error) {
-      console.error("Error creating task:", error);
-      Alert.alert("Error", "Failed to create task");
-    }
+    // Add the project to Firestore
+    await updateDoc(doc(collection(db, 'projects'), projectId), {
+      steps: arrayUnion(steps)
+    });
+    router.back();
   };
+
+  const addImage = async () => {
+    const image = await ImagePicker.launchImageLibraryAsync()
+    if (!image.canceled) {
+      updateStep("imageURL", image.assets[0].fileName || "Added an Image")
+    } else {
+      Alert.alert("You did not select an image. Please try again.");
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>New Project Task</Text>
-      <Text style={styles.label}>Task Title:</Text>
-      <TextInput
-        style={styles.input}
-        value={taskTitle}
-        onChangeText={setTaskTitle}
-        placeholder="Create an Account"
-      />
 
-      {steps.map((step, index) => (
-        <View key={index} style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>Step {index + 1}:</Text>
+      {steps && (
+        <View style={styles.stepContainer}>
           <Text style={styles.label}>Title:</Text>
           <TextInput
             style={styles.input}
-            value={step.title}
-            onChangeText={(text) => updateStep(index, "title", text)}
+            value={steps.title}
+            onChangeText={(text) => updateStep("title", text)}
             placeholder="Step title"
           />
           <Text style={styles.label}>Description:</Text>
           <Pressable
-            onPress={() => openDescriptionModal(index)}
+            onPress={() => openDescriptionModal()}
             style={styles.pressableInput}
           >
             <TextInput
               style={styles.input}
-              value={step.description}
+              value={steps.description}
               placeholder="Add a description"
               editable={false}
               pointerEvents="none"
@@ -109,20 +89,15 @@ const NewProjectTask = () => {
 
           <Pressable
             style={styles.imageButton}
-            onPress={() =>
-              Alert.alert(
-                "Add Image",
-                "Feature to add an image will be implemented here."
-              )
-            }
+            onPress={() => addImage()}
           >
             <Ionicons name="image-outline" size={20} color="blue" />
             <Text style={styles.imageButtonText}>
-              {step.image ? "Screenshot.png" : "Add an image"}
+              {steps.imageURL ? steps.imageURL.substring(0, 40) : "Add an image"}
             </Text>
           </Pressable>
         </View>
-      ))}
+      )}
 
       <Pressable style={styles.createButton} onPress={handleCreateTask}>
         <Text style={styles.createButtonText}>Create Task</Text>

@@ -31,24 +31,14 @@ export default function CreateProject() {
         author: user?.uid,
         title: projectName,
         date: new Date().getTime(),
-        steps: [
-          {
-            title: "start",
-            description: "sign up",
-            imageURL:
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fen.opensuse.org%2Fimages%2Fa%2Fa8%2FVS_Code_screenshot.png&f=1&nofb=1&ipt=ca1d56bb9cd0fe1585b88221fa54be2cedac4a0bc76a2eddb49168e683468944&ipo=images",
-          },
-          {
-            title: "use app",
-            description: "do something",
-            imageURL:
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fen.opensuse.org%2Fimages%2Fa%2Fa8%2FVS_Code_screenshot.png&f=1&nofb=1&ipt=ca1d56bb9cd0fe1585b88221fa54be2cedac4a0bc76a2eddb49168e683468944&ipo=images",
-          },
-        ],
+        published: false,
+        steps: [],
+      }).then((result)=>{
+        Alert.alert("Success", "Project not created quite yet");
+        router.push({pathname: "/createProjectTwo", params:{projectId: result.id}});
       });
 
-      Alert.alert("Success", "Project not created quite yet");
-      router.push("/home/project/projects"); // Navigate back to projects page
+      
     } catch (error) {
       console.error("Error creating project:", error);
       Alert.alert("Error", "Failed to create project");
@@ -97,7 +87,8 @@ export default function CreateProject() {
         </Picker>
       </View>
 
-            <Pressable style={styles.nextButton} onPress={() => router.push("/createProjectTwo")}>
+            <Pressable style={styles.nextButton} onPress={() => handleCreateProject()
+            }>
                 <Text style={styles.nextButtonText}>Next</Text>
             </Pressable>
         </View>
