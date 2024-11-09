@@ -27,7 +27,7 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
   <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10 }]} >
     <Pressable
       onPress={() => {
-        router.push({pathname:"/browseProjects", params: {app: title}});
+        router.push({pathname:"/home/project/browseProjects", params: {app: title}});
       }}
     >
       <Image
@@ -57,12 +57,14 @@ export default function Profile() {
   }, [user]);
 
   return ( userData &&
-    <View style={[styles.pageContainer, { paddingHorizontal: 20 }]}>
+    <View style={[styles.container, { paddingHorizontal: 20 }]}>
       <Text style={[styles.titleBlue, { alignSelf: "center"}]}>{name}</Text>
       {userData.accountDate && <Text style={[styles.itemText]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>}
       {userData.accountDate && <Text style={[styles.itemText]}>{userData.score} Points</Text>}
+      {userData.accountDate && <Text style={[styles.itemText]}>{userData.finishedProjects.length} Finished Projects</Text>}
+      {userData.accountDate && <Text style={[styles.itemText]}>{userData.contributed.length} Contributed Projects</Text>}
         <Pressable
-          style={[styles.buttonLarge]}
+          style={[styles.button, {position: "absolute", bottom: 20}]}
           onPress={() => {
             signOut(auth).then(()=>router.replace('/login')).catch((error) => {
                 Alert.alert("There was a problem signing you out. Please try again.")

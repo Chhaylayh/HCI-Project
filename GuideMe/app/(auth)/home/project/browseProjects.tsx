@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { type Project, type Projects as ProjectType } from "@/dbMocks/projects";
-import { styles } from "../universalStyles";
+import { styles } from "../../../universalStyles";
 import {
   router,
   useGlobalSearchParams,
@@ -26,7 +26,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<ProjectType>({});
   let querySnapshot;
   useEffect(() => {
-    if (app) {
+    if (app && app !== "all") {
       querySnapshot = getDocs(
         query(collection(db, "projects"), where("app", "==", app))
       ).then((result) => {
@@ -34,7 +34,7 @@ export default function Projects() {
         result.docs.forEach((doc) => (newData[doc.id] = doc.data() as Project));
         setProjects(newData);
       });
-    } else {
+    } else if (app == "all") {
       querySnapshot = getDocs(query(collection(db, "projects"))).then(
         (result) => {
           const newData: ProjectType = {};
@@ -55,22 +55,24 @@ export default function Projects() {
 
     // Set the "capital" field of the city 'DC'
     updateDoc(userRef, {
-      inProgress: arrayUnion({id:id, step:0})
+      inProgress: arrayUnion({ id: id, step: 0 }),
     });
-    router.push(`/project/${id}`);
+    router.push(`/home/project/${id}`);
   };
   return (
     <View style={styles.container}>
       <Text style={styles.titleBlue}>Projects</Text>
-      {keys.map((key, i) => (
-        <Pressable
-          style={styles.button}
-          onPress={() => navToProject(key)}
-          key={i}
-        >
-          <Text style={styles.buttonText}>{projects[key].title}</Text>
-        </Pressable>
-      ))}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {keys.map((key, i) => (
+          <Pressable
+            style={[styles.button, {marginVertical: 10}]}
+            onPress={() => navToProject(key)}
+            key={i}
+          >
+            <Text style={styles.buttonText}>{projects[key].title}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
     </View>
   );
 }

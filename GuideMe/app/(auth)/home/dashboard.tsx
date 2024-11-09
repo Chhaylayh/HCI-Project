@@ -23,7 +23,7 @@ const Item: React.FC<ItemProps> = ({ title, image, background }) => (
   <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10 }]} >
     <Pressable
       onPress={() => {
-        router.push({pathname:"/browseProjects", params: {app: title}});
+        router.push({pathname:"/home/project/browseProjects", params: {app: title}});
       }}
     >
       <Image
@@ -55,7 +55,7 @@ export default function Dashboard() {
           <Text style={styles.buttonText}>Search</Text>
         </Pressable>
         {/* light blue filler to guide the buttons */}
-        <View style={[styles.pageContainer, { marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
+        <View style={[{ borderRadius: 10, flex: 1, padding: 20, marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
           <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Have a specific issue?</Text>
         </View>
       </View>
@@ -65,13 +65,13 @@ export default function Dashboard() {
         <Pressable
           style={[styles.buttonLarge, { marginRight: 0 }]}
           onPress={() => {
-            router.push("/home/projects");
+            router.push("/home/project/projects");
           }}
         >
           <Text style={styles.buttonText}>Projects</Text>
         </Pressable>
         {/* light blue filler to guide the buttons */}
-        <View style={[styles.pageContainer, { marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
+        <View style={[{ borderRadius: 10, flex: 1, padding: 20, marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
           <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Start a project for an app.</Text>
         </View>
       </View>

@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
-import { styles } from "../../universalStyles";
+import { styles } from "../../../universalStyles";
 import { useGlobalSearchParams, useLocalSearchParams, router } from "expo-router";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
