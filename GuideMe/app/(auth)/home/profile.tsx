@@ -1,11 +1,12 @@
-import { Pressable, Text, View, FlatList, Image, Alert } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { Pressable, Text, View, FlatList, Image, Alert, ScrollView } from "react-native";
+import { router, useGlobalSearchParams } from "expo-router";
 import { styles } from "../../universalStyles";
 import { auth, db } from "@/firebase";
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, query, where } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { User } from "@/dbMocks/user";
+import { type Project, type Projects as ProjectType } from "@/dbMocks/projects";
 
 interface ItemProps {
   title: string;
@@ -44,33 +45,113 @@ export default function Profile() {
   const user = auth.currentUser;
   const name = user?.email?.split("@")[0];
   const [userData, setUserData] = useState<User>();
+  const [finishedProjectIds, setFinishedProjectIds] = useState<string[]>([]);
+  const [projects, setProjects] = useState<ProjectType>({});
+  const [isAnyProjectInProgress, setIsAnyProjectInProgress] = useState<boolean>(false);
+  const { app } = useGlobalSearchParams();
 
   useEffect(() => {
     if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
+
       getDoc(docRef).then((uDoc) => {
         if (uDoc.exists()) {
-          setUserData(uDoc.data() as User)
+          setUserData(uDoc.data() as User);
         }
       });
-    }
-  }, [user]);
 
-  return ( userData &&
-    <View style={[styles.pageContainer, { paddingHorizontal: 20 }]}>
-      <Text style={[styles.titleBlue, { alignSelf: "center"}]}>{name}</Text>
-      {userData.accountDate && <Text style={[styles.itemText]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>}
-      {userData.accountDate && <Text style={[styles.itemText]}>{userData.score} Points</Text>}
+      const fetchProjects = async () => {
+        let result;
+        if (app && app !== "all") {
+          result = await getDocs(query(collection(db, "projects"), where("app", "==", app)));
+        } else {
+          result = await getDocs(collection(db, "projects"));
+        }
+
+        const newData: ProjectType = {};
+        result.docs.forEach((doc) => {
+          newData[doc.id] = doc.data() as Project;
+        });
+        setProjects(newData);
+      };
+      const fetchUserFinishedProjects = async () => {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(collection(db, "users"), user.uid);
+          const userDoc = await getDoc(userRef);
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const finishedProjects = userData.finishedProjects || [];
+            // fetch the finishedProjects and store them in map for filtering. ZO
+            setFinishedProjectIds(finishedProjects.map((p: { id: string }) => p.id));
+            
+            // check for projects in progress. ZO
+            const inProgress = userData.inProgress || [];
+            setIsAnyProjectInProgress(inProgress.length > 0);
+          }
+        }
+      };
+      fetchProjects();
+      fetchUserFinishedProjects();
+    }
+  }, [user, app]);
+
+  // filter out finished projects from projects list. ZO
+  const filteredProjects = Object.keys(projects).filter(
+    (key) => finishedProjectIds.includes(key)
+  );
+
+  const navToProject = (id: string) => {
+    const user = auth.currentUser;
+    const userRef = doc(collection(db, "users"), user?.uid);
+    updateDoc(userRef, {
+      inProgress: arrayUnion({ id: id, step: 0 }),
+    });
+    router.push(`/home/project/${id}`);
+  };
+
+  return (
+    userData && (
+      <View style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20 }]}>
+        <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}'s GuideMe Stats</Text>
+        {userData.accountDate && (
+          <>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.score} Points</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.finishedProjects.length} Finished Projects</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.contributed.length} Contributed Projects</Text>
+          </>
+        )}
+        <Text style={[styles.titleBlue, { marginTop: 20 }]}>Finished Projects</Text>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {filteredProjects.map((key, i) => (
+            <Pressable
+              key={i}
+              style={[
+                styles.button,
+                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "#CCCCCC" : "darkblue" },
+              ]}
+              onPress={() => isAnyProjectInProgress ? null : navToProject(key)}
+              disabled={isAnyProjectInProgress}
+            >
+              <Text style={styles.buttonText}>{projects[key].title}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
         <Pressable
-          style={[styles.buttonLarge]}
+          style={[styles.button, { position: "absolute", bottom: 20 }]}
           onPress={() => {
-            signOut(auth).then(()=>router.replace('/login')).catch((error) => {
-                Alert.alert("There was a problem signing you out. Please try again.")
-              })
+            signOut(auth)
+              .then(() => router.replace("/login"))
+              .catch((error) => {
+                Alert.alert("There was a problem signing you out. Please try again.");
+              });
           }}
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </Pressable>
-    </View>
+      </View>
+    )
   );
 }

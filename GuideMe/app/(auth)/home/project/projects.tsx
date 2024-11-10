@@ -4,7 +4,16 @@ import users from "@/dbMocks/user";
 import projects from "@/dbMocks/projects";
 import { router } from "expo-router";
 import { Project as ProjectType } from "@/dbMocks/projects";
-import { collection, doc, getDoc, getDocs, limit, query, setDoc, where, } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useContext, useEffect, useState } from "react";
 
@@ -22,13 +31,23 @@ export default function Projects() {
           console.log(inProgress);
           const projectRef = doc(
             collection(db, "projects"),
-            typeof data.inProgress[0] === "string" ? data.inProgress[0] : data.inProgress[0].id
+            typeof data.inProgress[0] === "string"
+              ? data.inProgress[0]
+              : data.inProgress[0].id
           );
           getDoc(projectRef).then((pDoc) => {
             if (pDoc.exists()) {
               const pData: ProjectType = pDoc.data() as ProjectType;
               if (pData) {
-                setInProgress([...inProgress, [pData.title, typeof data.inProgress[0] === "string" ? data.inProgress[0] : data.inProgress[0].id]]);
+                setInProgress([
+                  ...inProgress,
+                  [
+                    pData.title,
+                    typeof data.inProgress[0] === "string"
+                      ? data.inProgress[0]
+                      : data.inProgress[0].id,
+                  ],
+                ]);
               }
             } else {
               console.error("error: project not found");
@@ -67,26 +86,65 @@ export default function Projects() {
     });
   };
 
-  return (
-    <View style={[styles.container, { paddingHorizontal: 20, paddingVertical: 40 }]}>
-
+  return (inProgress ?
+    <View
+      style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20, paddingVertical: 40 }]}
+    >
       {/* Title */}
-      <Text style={{ fontWeight: "bold", fontSize: 50, textAlign: "center", marginBottom: 50 }}>Project</Text>
+      <Text
+        style={{
+          fontWeight: "bold",
+          fontSize: 50,
+          textAlign: "center",
+          marginBottom: 50,
+          color: "darkblue",
+        }}
+      >
+        Project
+      </Text>
 
       {inProgress.length > 0 && (
-        <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => continueProject(inProgress[0][1])}>
+        <Pressable
+          style={[
+            styles.button,
+            { backgroundColor: "darkblue", marginBottom: 30 },
+          ]}
+          onPress={() => continueProject(inProgress[0][1])}
+        >
           <Text style={{ color: "white", fontSize: 20 }}>Continue Project</Text>
         </Pressable>
       )}
 
-      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/home/project/browseProjects")}>
-        <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
-      </Pressable>
+      {/* Start Project Button */}
+    <Pressable
+      style={[
+        styles.button,
+        {
+          backgroundColor: inProgress.length > 0 ? "#CCCCCC" : 'darkblue', // Gray out if disabled
+          marginBottom: 30,
+        },
+      ]}
+      onPress={() => {
+        if (inProgress.length === 0) {
+          router.push({
+            pathname: "/home/project/browseProjects",
+            params: { app: "all" },
+          });
+        }
+      }}
+      disabled={inProgress.length > 0} // Disable button click if there's a project in progress
+    >
+      <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
+    </Pressable>
 
-      <Pressable style={[styles.button, { backgroundColor: "#0E0A68", marginBottom: 30 }]} onPress={() => router.push("/createProject")}>
+      <Pressable
+        style={[
+          styles.button,
+          { backgroundColor: "darkblue", marginBottom: 30 },
+        ]}
+        onPress={() => router.push("/createProject")}
+      >
         <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
       </Pressable>
-
-    </View>
   );
 }

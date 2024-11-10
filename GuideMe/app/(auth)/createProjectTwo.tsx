@@ -1,103 +1,207 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { collection, addDoc } from 'firebase/firestore';
-import { db, auth } from '@/firebase';
-import { router } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Alert,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
+import { db, auth } from "@/firebase";
+import { router } from "expo-router";
+import { TaskStep } from "@/dbMocks/tasks";
+import { styles } from "../universalStyles";
 
 const CreateProjectTwo = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { projectName: initialProjectName } = route.params;
-  const [projectName, setProjectName] = useState(initialProjectName || '');
+  const { projectId: initialProjectId } = route.params;
+  const [projectName, setProjectName] = useState("");
+  const [steps, setSteps] = useState<TaskStep[]>();
   const user = auth.currentUser;
 
+  useEffect(() => {
+    const projectRef = doc(collection(db, "projects"), initialProjectId);
+    getDoc(projectRef).then((pDoc) => {
+      if (pDoc.exists()) {
+        setProjectName(pDoc.data().projectName);
+        setSteps(pDoc.data().steps);
+      } else {
+        console.error("error: project not found");
+      }
+    });
+  });
+
   const handleCreateProject = async () => {
-    if (!projectName.trim()) {
-      Alert.alert("Error", "Please enter a project name");
+    if (!steps) {
       return;
     }
-
     try {
-      // Add the project to Firestore
-      await addDoc(collection(db, 'projects'), {
-        title: projectName,
-        author: user?.uid,
-        createdAt: new Date(),
-      });
-
       Alert.alert("Success", "Project created successfully!");
-      router.push('/projects'); // Navigate back to projects page
+      router.push("createdProject"); // Navigate back to projects page
     } catch (error) {
       console.error("Error creating project:", error);
-      Alert.alert("Error", "Failed to create project");
     }
   };
 
+  const handleAddTask = () => {
+    router.push({pathname: "/newProjectTask", params: { projectId: initialProjectId }});
+  };
+
+  const taskPairs = [];
+  if (steps) {
+    for (let i = 0; i < steps.length; i += 2) {
+      taskPairs.push(steps.slice(i, i + 2));
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={[localStyles.scrollView, styles.beigeBackground]}>
+      <View style={[localStyles.container, styles.beigeBackground]}>
+        <View style={[localStyles.header, styles.beigeBackground]}>
+          <Pressable onPress={() => router.back()} style={localStyles.backButton}>
+            <Text style={localStyles.backButtonText}>‹ Back</Text>
+          </Pressable>
+          <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
+        </View>
 
-      <Text style={styles.title}>{projectName}Testing</Text>
+        <View style={localStyles.taskContainer}>
+          {taskPairs.map((pair, rowIndex) => (
+            <View key={rowIndex} style={localStyles.taskRow}>
+              {pair.map((step, i) => (
+                <Pressable
+                  key={i}
+                  style={localStyles.taskButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/newProjectTask",
+                      params: { projectId: initialProjectId },
+                    })
+                  } // Navigate to the corresponding route
+                >
+                  <View style={localStyles.taskButtonContent}>
+                    <Text style={localStyles.taskButtonText}>{step.title}</Text>
+                  </View>
+                </Pressable>
+              ))}
+              {/* Add empty space if the row has only one item */}
+              {pair.length === 1 && (
+                <View style={[localStyles.taskButton, localStyles.emptyTask]} />
+              )}
+            </View>
+          ))}
 
-      <Text style={styles.subtitle}>Start by adding a task to your project</Text>
+          <Pressable style={localStyles.addButton} onPress={handleAddTask}>
+            <Text style={localStyles.addButtonText}>+</Text>
+          </Pressable>
+        </View>
 
-      <Pressable style={styles.addButton} onPress={() => router.push("/newProjectTask")}>
-        <Text style={styles.addButtonText}>Add a Task</Text>
-      </Pressable>
-
-      <Pressable style={styles.nextButton} onPress={() => Alert.alert("Project Published")}>
-        <Text style={styles.nextButtonText}>Publish Project</Text>
-      </Pressable>
-    </View>
+        <View style={localStyles.footer}>
+          <Pressable style={localStyles.publishButton} onPress={handleCreateProject}>
+            <Text style={localStyles.publishButtonText}>Publish Project →</Text>
+          </Pressable>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
+const windowWidth = Dimensions.get("window").width;
+const taskButtonSize = (windowWidth - 60) / 2;
+
+const localStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  header: {
+    marginBottom: 24,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: "#666",
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 24,
+    color: "darkblue",
   },
-  subtitle: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 40,
-    color: '#333',
+  taskContainer: {
+    flex: 1,
+    gap: 12,
+  },
+  taskRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 20,
+    marginBottom: 20,
+  },
+  taskButton: {
+    width: taskButtonSize,
+    height: taskButtonSize,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 12,
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  taskButtonContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  emptyTask: {
+    backgroundColor: "transparent",
+  },
+  taskButtonText: {
+    fontSize: 20,
+    color: "#333",
+    textAlign: "center",
+    fontWeight: "500",
+    lineHeight: 28,
+    width: "100%",
   },
   addButton: {
-    backgroundColor: '#0000b0',
-    borderRadius: 5,
-    paddingVertical: 20,
-    width: 400, // Fixed width for consistency
-    alignItems: 'center',
-    marginTop: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#ddd",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    marginTop: 12,
   },
   addButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 24,
+    color: "#666",
   },
-  nextButton: {
-    backgroundColor: '#0000b0',
-    borderRadius: 5,
+  footer: {
+    marginTop: "auto",
     paddingVertical: 20,
-    width: 400, // Same fixed width as addButton
-    alignItems: 'center',
-    marginTop: 20,
-    
   },
-  nextButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+  publishButton: {
+    backgroundColor: "darkblue",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  publishButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
