@@ -65,9 +65,6 @@ const CreateProjectTwo = () => {
     <ScrollView style={[localStyles.scrollView, styles.beigeBackground]}>
       <View style={[localStyles.container, styles.beigeBackground]}>
         <View style={[localStyles.header, styles.beigeBackground]}>
-          <Pressable onPress={() => router.back()} style={localStyles.backButton}>
-            <Text style={localStyles.backButtonText}>‹ Back</Text>
-          </Pressable>
           <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
         </View>
 
@@ -137,9 +134,6 @@ const localStyles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
-  },
-  backButton: {
-    marginBottom: 16,
   },
   backButtonText: {
     fontSize: 16,

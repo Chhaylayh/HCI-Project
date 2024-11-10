@@ -118,7 +118,7 @@ export default function Project() {
           inProgress: updatedInProgress,
           finishedProjects: updatedFinishedProjects,
         });
-        router.push("/home");
+        router.replace("/home");
       }
     } catch (error) {
       console.error("Error finishing project:", error);

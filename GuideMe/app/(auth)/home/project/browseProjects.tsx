@@ -59,7 +59,9 @@ export default function Projects() {
   }, [app]);
 
   // filter out finished projects from projects list. ZO
-  const filteredProjects = Object.keys(projects);
+  const filteredProjects = Object.keys(projects).filter(
+    (key) => !finishedProjectIds.includes(key) && projects[key].published
+  );
 
   const navToProject = (id: string) => {
     // add [id, 0] to database?
@@ -74,11 +76,10 @@ export default function Projects() {
   };
 
   return (
-    <View style={[styles.container, styles.beigeBackground]}>
-      <Text style={styles.titleBlue}>Projects</Text>
+    <View style={styles.container}>
+      <Text style={[styles.titleBlue, {textAlign: "center"}]}>Projects {app ? "for "+ app : ""}</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredProjects.map((key, i) => (
-          !finishedProjectIds.includes(key) && projects[key].published &&
+        {filteredProjects.length > 0 ? filteredProjects.map((key, i) => (
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
@@ -86,7 +87,7 @@ export default function Projects() {
           >
             <Text style={styles.buttonText}>{projects[key].title}</Text>
           </Pressable>
-        ))}
+        )) : <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
       </ScrollView>
     </View>
   );
