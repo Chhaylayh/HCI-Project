@@ -114,7 +114,7 @@ export default function Profile() {
   return (
     userData && (
       <View style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20 }]}>
-        <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}'s Guided Stats</Text>
+        <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}'s GuideMe Stats</Text>
         {userData.accountDate && (
           <>
             <Text style={[styles.itemText, { color: "darkblue"}]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>
