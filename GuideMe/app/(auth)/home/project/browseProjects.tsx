@@ -19,9 +19,11 @@ export default function Projects() {
   const { app } = useGlobalSearchParams();
   const [projects, setProjects] = useState<ProjectType>({});
   const [finishedProjectIds, setFinishedProjectIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       let result;
 
       if (app && app !== "all") {
@@ -37,9 +39,11 @@ export default function Projects() {
         newData[doc.id] = doc.data() as Project;
       });
       setProjects(newData);
+      
     };
 
     const fetchUserFinishedProjects = async () => {
+      setLoading(true);
       const user = auth.currentUser;
       if (user) {
         const userRef = doc(collection(db, "users"), user.uid);
@@ -52,6 +56,7 @@ export default function Projects() {
           setFinishedProjectIds(finishedProjects.map((p: { id: string }) => p.id));
         }
       }
+      setLoading(false);
     };
 
     fetchProjects();
@@ -76,10 +81,10 @@ export default function Projects() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.titleBlue, {textAlign: "center"}]}>Projects {app ? "for "+ app : ""}</Text>
+    <View style={[styles.pageContainer, styles.beigeBackground]}>
+      <Text style={[styles.titleBlue, {textAlign: "center"}]}>Projects {(app && app !== "all") ? "for "+ app : ""}</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredProjects.length > 0 ? filteredProjects.map((key, i) => (
+        {( filteredProjects.length > 0) ? filteredProjects.map((key, i) => (
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
@@ -87,7 +92,7 @@ export default function Projects() {
           >
             <Text style={styles.buttonText}>{projects[key].title}</Text>
           </Pressable>
-        )) : <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
+        )) : !loading && <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
       </ScrollView>
     </View>
   );
