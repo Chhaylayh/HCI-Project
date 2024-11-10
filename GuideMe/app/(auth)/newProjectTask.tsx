@@ -100,7 +100,7 @@ const NewProjectTask = () => {
         </View>
       )}
 
-      <Pressable style={localStyles.createButton} onPress={handleCreateTask}>
+      <Pressable style={[localStyles.createButton, { backgroundColor: "darkblue"}]} onPress={handleCreateTask}>
         <Text style={localStyles.createButtonText}>Create Task</Text>
       </Pressable>
 
