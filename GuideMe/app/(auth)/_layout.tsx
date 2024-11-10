@@ -8,8 +8,8 @@ export default function TabLayout() {
   }
   return (
     <Stack>
-      <Stack.Screen name="home" options={{title: "GuideMe"}}/>
-      <Stack.Screen name="task" options={{ headerTitle: "Tasks" }}/>
+      <Stack.Screen name="home" options={{title: "GuideMe", headerStyle: { backgroundColor: '#f5f5dc' }}}/>
+      <Stack.Screen name="task" options={{ headerTitle: "Tasks", headerStyle: { backgroundColor: '#f5f5dc' }}}/>
     </Stack>
   );
 }

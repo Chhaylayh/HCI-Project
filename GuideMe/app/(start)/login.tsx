@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styles.beigeBackground]}>
       {/* Welcome Message */}
       <Text style={styles.titleBlue}>Welcome! Please log in.</Text>
 

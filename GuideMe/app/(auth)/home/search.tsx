@@ -42,7 +42,7 @@ export default function Search() {
   ];
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, styles.beigeBackground]}>
       {/* Back Button */}
       <Pressable onPress={() => router.back()} style={localStyles.backButton}>
         <Ionicons name="arrow-back" size={24} color="blue" />
@@ -85,12 +85,12 @@ export default function Search() {
 
           {/* Additional Static Suggestions */}
           {additionalResults.map((result, i) => (
-            <View key={i} style={localStyles.suggestionButton}>
+            <View key={i} style={[localStyles.suggestionButton, { backgroundColor: "darkblue"}]}>
               <Text style={localStyles.suggestionText}>{result}</Text>
             </View>
           ))}
         </ScrollView>
-      ) : <Text style={styles.itemText}>Search for an app or task you're having trouble with!</Text>}
+      ) : <Text style={[styles.itemText, { color: "darkblue"}]}>Search for an app or task you're having trouble with!</Text>}
 
       {/* No Results */}
       {isSearched && suggestions.length === 0 && (
@@ -109,7 +109,7 @@ const localStyles = StyleSheet.create({
   },
   backText: {
     fontSize: 18,
-    color: "blue",
+    color: "darkblue",
     marginLeft: 5,
   },
 
@@ -117,7 +117,8 @@ const localStyles = StyleSheet.create({
   titleText: {
     fontSize: 40,
     fontWeight: "bold",
-    color: "black",
+    color: "darkblue",
+    textAlign: "center",
     marginBottom: 30,
   },
 
@@ -125,7 +126,7 @@ const localStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "darkblue",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
@@ -145,7 +146,7 @@ const localStyles = StyleSheet.create({
 
   // Individual suggestion button style
   suggestionButton: {
-    backgroundColor: "blue",
+    backgroundColor: "darkblue",
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 10,

@@ -113,7 +113,7 @@ export default function Profile() {
 
   return (
     userData && (
-      <View style={[styles.container, { paddingHorizontal: 20 }]}>
+      <View style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20 }]}>
         <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}</Text>
         {userData.accountDate && (
           <>
@@ -130,7 +130,7 @@ export default function Profile() {
               key={i}
               style={[
                 styles.button,
-                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "grey" : "blue" },
+                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "#CCCCCC" : "darkblue" },
               ]}
               onPress={() => isAnyProjectInProgress ? null : navToProject(key)}
               disabled={isAnyProjectInProgress}
