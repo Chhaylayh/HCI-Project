@@ -1,7 +1,8 @@
 import { Pressable, Text, View, FlatList, Image } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { styles } from "../../universalStyles";
 import { auth } from "@/firebase";
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
 interface ItemProps {
   title: string;
@@ -9,83 +10,94 @@ interface ItemProps {
   background: string;
 }
 
-{/* array that contains all suggested app info */}
 const DATA = [
   { id: '1', title: 'ChatGPT', background: 'lightgreen', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/2048px-ChatGPT_logo.svg.png' },
   { id: '2', title: 'VS Code', background: 'lightblue', image: 'https://tidalcycles.org/assets/images/vscodeicon-42dc264fde2adb74cc197fe6d02b183c.png' },
   { id: '3', title: 'Microsoft Excel', background: 'green', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png' },
   { id: '4', title: 'Discord', background: 'darkblue', image: 'https://static.vecteezy.com/system/resources/previews/023/741/066/non_2x/discord-logo-icon-social-media-icon-free-png.png' },
-  { id: '5', title: 'Miscrosoft Teams', background: '#B19CD9', image: 'https://www.thomas-krenn.com/redx/tools/mb_image.php/ct.ZHmFQ/cid.y04aedfd415189e63/Microsoft_Teams.png' },
+  { id: '5', title: 'Microsoft Teams', background: '#B19CD9', image: 'https://www.thomas-krenn.com/redx/tools/mb_image.php/ct.ZHmFQ/cid.y04aedfd415189e63/Microsoft_Teams.png' },
 ];
 
-{/* item display */}
 const Item: React.FC<ItemProps> = ({ title, image, background }) => (
-  <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10 }]} >
+  <View style={[styles.item, { width: 150, marginRight: 20, backgroundColor: background, borderRadius: 10, alignItems: 'center', paddingVertical: 20 }]}>
     <Pressable
       onPress={() => {
-        router.push({pathname:"/home/project/browseProjects", params: {app: title}});
+        router.push({ pathname: "/home/project/browseProjects", params: { app: title } });
       }}
     >
       <Image
         source={{ uri: image }}
-        style={{ width: 100, height: 100, marginBottom: 10 }}
-        resizeMode="cover"
+        style={{ width: 80, height: 80, marginBottom: 10 }}
+        resizeMode="contain"
       />
-      {/* <Text style={[styles.itemText, { alignSelf: "center"}]}>{title}</Text> */}
+      <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>{title}</Text>
     </Pressable>
   </View>
 );
 
 export default function Dashboard() {
   const user = auth.currentUser;
-  const name = user?.email?.split("@")[0];
+  const name = user?.email?.split("@")[0] || "user";
 
   return (
-    <View style={[styles.pageContainer, styles.beigeBackground, { paddingHorizontal: 20 }]}>
-      <Text style={[styles.titleBlue, { alignSelf: "center", marginTop: -20}]}>Welcome, {name}!</Text>
-      
-      {/* row for search button and text */}
-      <View style={[styles.rowContainer]}>
+    <View style={[styles.pageContainer, styles.beigeBackground, { paddingHorizontal: 20, paddingVertical: 40 }]}>
+      <Text style={[styles.titleBlue, { alignSelf: "center", fontSize: 24, fontWeight: "bold", marginBottom: 30 }]}>
+        Welcome, {name}!
+      </Text>
+
+      {/* Full-width Buttons for Search and Projects */}
+      <View style={{ width: "100%", marginBottom: 20 }}>
         <Pressable
-          style={[styles.buttonLarge, { marginRight: 0 }]}
+          style={{
+            backgroundColor: 'darkblue',
+            paddingVertical: 15,
+            borderRadius: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 10,
+          }}
           onPress={() => {
             router.push("/home/search");
           }}
         >
-          <Text style={styles.buttonText}>Search</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <MaterialIcons name="search" size={24} color="white" style={{ marginRight: 10 }} />
+            <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>Search</Text>
+          </View>
         </Pressable>
-        {/* light blue filler to guide the buttons */}
-        <View style={[{ borderRadius: 10, flex: 1, padding: 20, marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
-          <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Have a specific issue?</Text>
-        </View>
-      </View>
 
-      {/* row for projects button and text */}
-      <View style={[styles.rowContainer]}>
         <Pressable
-          style={[styles.buttonLarge, { marginRight: 0 }]}
+          style={{
+            backgroundColor: 'darkblue',
+            paddingVertical: 15,
+            borderRadius: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
           onPress={() => {
             router.push("/home/project/projects");
           }}
         >
-          <Text style={styles.buttonText}>Projects</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <AntDesign name="plus" size={24} color="white" style={{ marginRight: 10 }} />
+            <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>Projects</Text>
+          </View>
         </Pressable>
-        {/* light blue filler to guide the buttons */}
-        <View style={[{ borderRadius: 10, flex: 1, padding: 20, marginTop: -20, backgroundColor: 'lightblue', height: 100 }]}>
-          <Text style={[styles.inputLabel, { marginTop: 20, marginLeft: 10 }]}>{ '<-'} Start a project for an app.</Text>
-        </View>
       </View>
 
-      {/* horizontal flatList */}
-      <Text style={[styles.titleBlue, { alignSelf: "center" }]}>Suggested apps:</Text>
+      {/* Suggested Apps Section */}
+      <Text style={[styles.titleBlue, { alignSelf: "center", fontSize: 20, marginBottom: 10 }]}>
+        Suggested Apps
+      </Text>
       <FlatList
         data={DATA}
         renderItem={({ item }) => <Item title={item.title} image={item.image} background={item.background} />}
         keyExtractor={item => item.id}
         horizontal
-        //showsHorizontalScrollIndicator={false}
-        //style={{ marginTop: 20 }}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
       />
     </View>
   );
 }
+0
