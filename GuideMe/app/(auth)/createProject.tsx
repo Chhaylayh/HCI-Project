@@ -102,11 +102,6 @@ const localStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f5f5dc',
   },
-  backButton: {
-    fontSize: 18,
-    color: "#0000b0",
-    marginBottom: 20,
-  },
   title: {
     fontSize: 36,
     fontWeight: "bold",

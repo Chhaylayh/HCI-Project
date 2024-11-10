@@ -19,9 +19,11 @@ export default function Projects() {
   const { app } = useGlobalSearchParams();
   const [projects, setProjects] = useState<ProjectType>({});
   const [finishedProjectIds, setFinishedProjectIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       let result;
 
       if (app && app !== "all") {
@@ -37,9 +39,11 @@ export default function Projects() {
         newData[doc.id] = doc.data() as Project;
       });
       setProjects(newData);
+      
     };
 
     const fetchUserFinishedProjects = async () => {
+      setLoading(true);
       const user = auth.currentUser;
       if (user) {
         const userRef = doc(collection(db, "users"), user.uid);
@@ -52,6 +56,7 @@ export default function Projects() {
           setFinishedProjectIds(finishedProjects.map((p: { id: string }) => p.id));
         }
       }
+      setLoading(false);
     };
 
     fetchProjects();
@@ -59,7 +64,9 @@ export default function Projects() {
   }, [app]);
 
   // filter out finished projects from projects list. ZO
-  const filteredProjects = Object.keys(projects);
+  const filteredProjects = Object.keys(projects).filter(
+    (key) => !finishedProjectIds.includes(key) && projects[key].published
+  );
 
   const navToProject = (id: string) => {
     // add [id, 0] to database?
@@ -74,11 +81,10 @@ export default function Projects() {
   };
 
   return (
-    <View style={[styles.container, styles.beigeBackground]}>
-      <Text style={styles.titleBlue}>Projects</Text>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredProjects.map((key, i) => (
-          !finishedProjectIds.includes(key) && projects[key].published &&
+    <View style={[styles.pageContainer, styles.beigeBackground]}>
+      <Text style={[styles.titleBlue, {textAlign: "center"}]}>Projects {(app && app !== "all") ? "for "+ app : ""}</Text>
+      {!loading && <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {( filteredProjects.length > 0) ? filteredProjects.map((key, i) => (
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
@@ -86,8 +92,8 @@ export default function Projects() {
           >
             <Text style={styles.buttonText}>{projects[key].title}</Text>
           </Pressable>
-        ))}
-      </ScrollView>
+        )) : <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
+      </ScrollView>}
     </View>
   );
 }

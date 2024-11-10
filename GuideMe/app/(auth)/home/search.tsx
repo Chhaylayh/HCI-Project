@@ -43,11 +43,6 @@ export default function Search() {
 
   return (
     <View style={[styles.pageContainer, styles.beigeBackground]}>
-      {/* Back Button */}
-      <Pressable onPress={() => router.back()} style={localStyles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="blue" />
-        <Text style={localStyles.backText}>Back</Text>
-      </Pressable>
 
       {/* Search Title */}
       <Text style={localStyles.titleText}>Search</Text>
@@ -102,11 +97,6 @@ export default function Search() {
 
 const localStyles = StyleSheet.create({
   // Back button style
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
   backText: {
     fontSize: 18,
     color: "darkblue",
