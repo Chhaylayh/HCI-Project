@@ -13,6 +13,7 @@ import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { router } from "expo-router";
 import { TaskStep } from "@/dbMocks/tasks";
+import { styles } from "../universalStyles";
 
 const CreateProjectTwo = () => {
   const navigation = useNavigation();
@@ -61,22 +62,22 @@ const CreateProjectTwo = () => {
   }
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>‹ Back</Text>
+    <ScrollView style={[localStyles.scrollView, styles.beigeBackground]}>
+      <View style={[localStyles.container, styles.beigeBackground]}>
+        <View style={[localStyles.header, styles.beigeBackground]}>
+          <Pressable onPress={() => router.back()} style={localStyles.backButton}>
+            <Text style={localStyles.backButtonText}>‹ Back</Text>
           </Pressable>
-          <Text style={styles.title}>Write a Short Story with ChatGPT</Text>
+          <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
         </View>
 
-        <View style={styles.taskContainer}>
+        <View style={localStyles.taskContainer}>
           {taskPairs.map((pair, rowIndex) => (
-            <View key={rowIndex} style={styles.taskRow}>
+            <View key={rowIndex} style={localStyles.taskRow}>
               {pair.map((step, i) => (
                 <Pressable
                   key={i}
-                  style={styles.taskButton}
+                  style={localStyles.taskButton}
                   onPress={() =>
                     router.push({
                       pathname: "/newProjectTask",
@@ -84,27 +85,27 @@ const CreateProjectTwo = () => {
                     })
                   } // Navigate to the corresponding route
                 >
-                  <View style={styles.taskButtonContent}>
-                    <Text style={styles.taskButtonText}>{step.title}</Text>
+                  <View style={localStyles.taskButtonContent}>
+                    <Text style={localStyles.taskButtonText}>{step.title}</Text>
                   </View>
                 </Pressable>
               ))}
               {/* Add empty space if the row has only one item */}
               {pair.length === 1 && (
-                <View style={[styles.taskButton, styles.emptyTask]} />
+                <View style={[localStyles.taskButton, localStyles.emptyTask]} />
               )}
             </View>
           ))}
 
-          <Pressable style={[styles.addButton]} onPress={handleAddTask}>
-            <Text style={styles.addButtonText}>+</Text>
+          <Pressable style={[localStyles.addButton]} onPress={handleAddTask}>
+            <Text style={localStyles.addButtonText}>+</Text>
           </Pressable>
         </View>
 
-        <View style={styles.footer}>
+        <View style={localStyles.footer}>
           <Pressable
             style={[
-              styles.publishButton,
+              localStyles.publishButton,
               {
                 backgroundColor:
                   steps && steps.length > 0 ? "#0E0A68" : "#CCCCCC", // Gray out if disabled
@@ -113,7 +114,7 @@ const CreateProjectTwo = () => {
             onPress={(steps && steps.length > 0) ? handleCreateProject : ()=>Alert.alert("Add a step first")}
             disabled={!(steps && steps.length > 0)}
           >
-            <Text style={styles.publishButtonText}>Publish Project →</Text>
+            <Text style={localStyles.publishButtonText}>Publish Project →</Text>
           </Pressable>
         </View>
       </View>
@@ -124,7 +125,7 @@ const CreateProjectTwo = () => {
 const windowWidth = Dimensions.get("window").width;
 const taskButtonSize = (windowWidth - 60) / 2;
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: "#fff",
@@ -148,6 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 24,
+    color: "darkblue",
   },
   taskContainer: {
     flex: 1,
@@ -204,7 +206,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   publishButton: {
-    backgroundColor: "#0000b0",
+    backgroundColor: "darkblue",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

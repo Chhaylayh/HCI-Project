@@ -74,7 +74,7 @@ export default function Projects() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styles.beigeBackground]}>
       <Text style={styles.titleBlue}>Projects</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {filteredProjects.map((key, i) => (

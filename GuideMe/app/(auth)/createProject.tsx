@@ -11,6 +11,7 @@ import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import { collection, addDoc, doc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
+import { styles } from "../universalStyles";
 
 export default function CreateProject() {
   const [projectName, setProjectName] = useState("");
@@ -46,24 +47,24 @@ export default function CreateProject() {
   };
 
     return (
-        <View style={styles.container}>
+        <View style={[localStyles.container, styles.beigeBackground]}>
 
-      <Text style={styles.title}>Create a Project</Text>
+      <Text style={localStyles.title}>Create a Project</Text>
 
-      <Text style={styles.label}>Project Name:</Text>
+      <Text style={localStyles.label}>Project Name:</Text>
       <TextInput
-        style={styles.input}
+        style={[localStyles.input, {backgroundColor: "white"}]}
         placeholder="Write a Short Story with ChatGPT"
         value={projectName}
         onChangeText={setProjectName}
       />
 
-      <Text style={styles.label}>Relevant App</Text>
-      <View style={styles.pickerContainer}>
+      <Text style={localStyles.label}>Relevant App</Text>
+      <View style={localStyles.pickerContainer}>
         <Picker
           selectedValue={selectedApp}
           onValueChange={(itemValue) => setSelectedApp(itemValue)}
-          style={styles.picker}
+          style={localStyles.picker}
           mode="dropdown"
         >
           <Picker.Item label="ChatGPT" value="ChatGPT" />
@@ -74,12 +75,12 @@ export default function CreateProject() {
         </Picker>
       </View>
 
-      <Text style={styles.label}>Project Type</Text>
-      <View style={styles.pickerContainer}>
+      <Text style={localStyles.label}>Project Type</Text>
+      <View style={localStyles.pickerContainer}>
         <Picker
           selectedValue={projectType}
           onValueChange={(itemValue) => setProjectType(itemValue)}
-          style={styles.picker}
+          style={localStyles.picker}
           mode="dropdown"
         >
           <Picker.Item label="Project" value="Project" />
@@ -87,19 +88,19 @@ export default function CreateProject() {
         </Picker>
       </View>
 
-            <Pressable style={styles.nextButton} onPress={() => handleCreateProject()
+            <Pressable style={localStyles.nextButton} onPress={() => handleCreateProject()
             }>
-                <Text style={styles.nextButtonText}>Next</Text>
+                <Text style={localStyles.nextButtonText}>Next</Text>
             </Pressable>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#f5f5dc',
   },
   backButton: {
     fontSize: 18,
@@ -111,13 +112,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: "#000",
+    color: "darkblue",
   },
   label: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 5,
-    color: "#000",
+    color: "darkblue",
   },
   input: {
     borderWidth: 2,

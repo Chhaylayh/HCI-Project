@@ -55,12 +55,12 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styles.beigeBackground]}>
       {/* Welcome Message */}
       <Text style={styles.titleBlue}>Get Started!</Text>
 
       {/* Username Label */}
-      <Text style={styles.inputLabel}>Username</Text>
+      <Text style={styles.inputLabel}>Email</Text>
       <TextInput
         placeholder="Enter your username"
         value={email}

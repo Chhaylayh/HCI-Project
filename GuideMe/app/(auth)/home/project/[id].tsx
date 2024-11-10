@@ -130,16 +130,16 @@ export default function Project() {
     router.back();
   } else return (
     project && (
-      <View style={styles.pageContainer}>
-        <Text style={[styles.titleBlue, { color: "black", textAlign: "center", fontSize: 50 }]}>{project.title}</Text>
+      <View style={[styles.pageContainer, styles.beigeBackground]}>
+        <Text style={[styles.titleBlue, { color: "darkblue", textAlign: "center", fontSize: 50 }]}>{project.title}</Text>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View key={currentStepIndex} style={[styles.stepContainer, { alignItems: "stretch" }]}>
-            <Text style={[styles.buttonText, { color: "black", textAlign: "center", fontSize: 30, textDecorationLine: "underline" }]}>{project.steps[currentStepIndex].title}</Text>
-            <Text style={[styles.buttonText, { color: "black", textAlign: "center", fontSize: 20, fontWeight: "300" }]}>{project.steps[currentStepIndex].description}</Text>
+            <Text style={[styles.buttonText, { color: "darkblue", textAlign: "center", fontSize: 30, textDecorationLine: "underline" }]}>{project.steps[currentStepIndex].title}</Text>
+            <Text style={[styles.buttonText, { color: "darkblue", textAlign: "center", fontSize: 20, fontWeight: "300" }]}>{project.steps[currentStepIndex].description}</Text>
             {project.steps[currentStepIndex].imageURL && (
               <Image source={{ uri: project.steps[currentStepIndex].imageURL }} style={styles.imageStyle} />
             )}
-            <Pressable style={[styles.buttonLarge, { marginTop: 50, width: 360 }]} onPress={toggleStatus}>
+            <Pressable style={[styles.buttonLarge, { marginTop: 50, width: 360, backgroundColor: stepCompleted ? "green" : "#f28b82", }]} onPress={toggleStatus}>
               <Text style={styles.buttonText}>{stepCompleted ? "Completed" : "Mark as Complete"}</Text>
             </Pressable>
             <View style={styles.rowContainer}>
@@ -147,7 +147,7 @@ export default function Project() {
                 <Text style={styles.buttonText}>Home</Text>
               </Pressable>
               <Pressable 
-                style={[ styles.buttonLarge, { marginTop: 10, width: 150, backgroundColor: stepCompleted ? "blue" : "grey" }]} // grey out until complete. ZO 
+                style={[ styles.buttonLarge, { marginTop: 10, width: 150, backgroundColor: stepCompleted ? "darkblue" : "#CCCCCC" }]} // grey out until complete. ZO 
                 onPress={handleNextStep}
                 >
                 <Text style={styles.buttonText}>

@@ -17,6 +17,7 @@ import { db } from "@/firebase";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import { styles } from "../universalStyles";
 
 const NewProjectTask = () => {
   const route = useRoute();
@@ -61,25 +62,25 @@ const NewProjectTask = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>New Project Task</Text>
+    <ScrollView contentContainerStyle={[localStyles.container, styles.beigeBackground, { justifyContent: "center", flexGrow: 1 }]}>
+      <Text style={[localStyles.header, styles.beigeBackground, {textAlign: "center"}]}>New Project Task</Text>
 
       {steps && (
-        <View style={styles.stepContainer}>
-          <Text style={styles.label}>Title:</Text>
+        <View style={[localStyles.stepContainer, styles.beigeBackground]}>
+          <Text style={localStyles.label}>Title:</Text>
           <TextInput
-            style={styles.input}
+            style={localStyles.pressableInput}
             value={steps.title}
             onChangeText={(text) => updateStep("title", text)}
             placeholder="Step title"
           />
-          <Text style={styles.label}>Description:</Text>
+          <Text style={localStyles.label}>Description:</Text>
           <Pressable
             onPress={() => openDescriptionModal()}
-            style={styles.pressableInput}
+            style={[localStyles.pressableInput]}
           >
             <TextInput
-              style={styles.input}
+              style={localStyles.input}
               value={steps.description}
               placeholder="Add a description"
               editable={false}
@@ -88,19 +89,19 @@ const NewProjectTask = () => {
           </Pressable>
 
           <Pressable
-            style={styles.imageButton}
+            style={[localStyles.imageButton, {backgroundColor: "white"}]}
             onPress={() => addImage()}
           >
             <Ionicons name="image-outline" size={20} color="blue" />
-            <Text style={styles.imageButtonText}>
+            <Text style={localStyles.imageButtonText}>
               {steps.imageURL ? steps.imageURL.substring(0, 40) : "Add an image"}
             </Text>
           </Pressable>
         </View>
       )}
 
-      <Pressable style={styles.createButton} onPress={handleCreateTask}>
-        <Text style={styles.createButtonText}>Create Task</Text>
+      <Pressable style={[localStyles.createButton, { backgroundColor: "darkblue"}]} onPress={handleCreateTask}>
+        <Text style={localStyles.createButtonText}>Create Task</Text>
       </Pressable>
 
       <Modal
@@ -111,20 +112,20 @@ const NewProjectTask = () => {
 >
   <KeyboardAvoidingView
     behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style={styles.modalContainer}
+    style={localStyles.modalContainer}
   >
-    <View style={styles.modalContent}>
-      <Text style={styles.modalHeader}>Enter Description</Text>
+    <View style={localStyles.modalContent}>
+      <Text style={localStyles.modalHeader}>Enter Description</Text>
       <TextInput
-        style={styles.modalInput}
+        style={localStyles.modalInput}
         value={tempDescription}
         onChangeText={setTempDescription}
         placeholder="Add a description"
         multiline={true}
         autoFocus={true} 
       />
-      <Pressable style={styles.saveButton} onPress={saveDescription}>
-        <Text style={styles.saveButtonText}>Save</Text>
+      <Pressable style={localStyles.saveButton} onPress={saveDescription}>
+        <Text style={localStyles.saveButtonText}>Save</Text>
       </Pressable>
     </View>
   </KeyboardAvoidingView>
@@ -134,26 +135,34 @@ const NewProjectTask = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: "#fff",
   },
   pressableInput: {
     ...StyleSheet.flatten([this.input]),
-    backgroundColor: "transparent",
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#0000b0",
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 10,
+    overflow: "hidden",
   },
   header: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "darkblue",
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     marginVertical: 5,
+    color: "darkblue",
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: "#0000b0",
     borderRadius: 5,
     padding: 10,

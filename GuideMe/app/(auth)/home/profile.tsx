@@ -113,14 +113,14 @@ export default function Profile() {
 
   return (
     userData && (
-      <View style={[styles.container, { paddingHorizontal: 20 }]}>
-        <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}</Text>
+      <View style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20 }]}>
+        <Text style={[styles.titleBlue, { alignSelf: "center" }]}>{name}'s GuideMe Stats</Text>
         {userData.accountDate && (
           <>
-            <Text style={[styles.itemText]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>
-            <Text style={[styles.itemText]}>{userData.score} Points</Text>
-            <Text style={[styles.itemText]}>{userData.finishedProjects && userData.finishedProjects.length} Finished Projects</Text>
-            <Text style={[styles.itemText]}>{userData.contributed.length} Contributed Projects</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.score} Points</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.finishedProjects && userData.finishedProjects.length} Finished Projects</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.contributed.length} Contributed Projects</Text>
           </>
         )}
         <Text style={[styles.titleBlue, { marginTop: 20 }]}>Finished Projects</Text>
@@ -130,7 +130,7 @@ export default function Profile() {
               key={i}
               style={[
                 styles.button,
-                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "grey" : "blue" },
+                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "#CCCCCC" : "darkblue" },
               ]}
               onPress={() => isAnyProjectInProgress ? null : navToProject(key)}
               disabled={isAnyProjectInProgress}
