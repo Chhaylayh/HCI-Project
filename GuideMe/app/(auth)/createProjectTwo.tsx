@@ -65,7 +65,7 @@ const CreateProjectTwo = () => {
           <Pressable onPress={() => router.back()} style={localStyles.backButton}>
             <Text style={localStyles.backButtonText}>‹ Back</Text>
           </Pressable>
-          <Text style={localStyles.title}>Write a Short Story with ChatGPT</Text>
+          <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
         </View>
 
         <View style={localStyles.taskContainer}>
