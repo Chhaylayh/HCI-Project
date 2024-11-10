@@ -34,6 +34,7 @@ export default function Login() {
             username: user.email?.split("@")[0],
             accountDate: new Date().getTime(),
             inProgress: [],
+            finishedProjects: [],
             contributed: [],
             relevantApps: [],
             score: 0,
