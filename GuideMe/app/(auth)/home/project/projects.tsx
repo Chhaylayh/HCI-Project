@@ -88,7 +88,7 @@ export default function Projects() {
 
   return (inProgress ?
     <View
-      style={[styles.container, { paddingHorizontal: 20, paddingVertical: 40 }]}
+      style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20, paddingVertical: 40 }]}
     >
       {/* Title */}
       <Text
@@ -97,6 +97,7 @@ export default function Projects() {
           fontSize: 50,
           textAlign: "center",
           marginBottom: 50,
+          color: "darkblue",
         }}
       >
         Project
@@ -106,7 +107,7 @@ export default function Projects() {
         <Pressable
           style={[
             styles.button,
-            { backgroundColor: "#0E0A68", marginBottom: 30 },
+            { backgroundColor: "darkblue", marginBottom: 30 },
           ]}
           onPress={() => continueProject(inProgress[0][1])}
         >
@@ -119,7 +120,7 @@ export default function Projects() {
       style={[
         styles.button,
         {
-          backgroundColor: inProgress.length > 0 ? "#CCCCCC" : "#0E0A68", // Gray out if disabled
+          backgroundColor: inProgress.length > 0 ? "#CCCCCC" : 'darkblue', // Gray out if disabled
           marginBottom: 30,
         },
       ]}
@@ -139,13 +140,14 @@ export default function Projects() {
       <Pressable
         style={[
           styles.button,
-          { backgroundColor: "#0E0A68", marginBottom: 30 },
+          { backgroundColor: "darkblue", marginBottom: 30 },
         ]}
         onPress={() => router.push("/createProject")}
       >
         <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
       </Pressable>
 
+      { /* 
       <Pressable
         style={[
           styles.button,
@@ -154,6 +156,7 @@ export default function Projects() {
       >
         <Text style={{ color: "white", fontSize: 20 }}>Scoreboard</Text>
       </Pressable>
+      */}
     </View> : <></>
   );
 }

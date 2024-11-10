@@ -41,7 +41,7 @@ export default function Dashboard() {
   const name = user?.email?.split("@")[0];
 
   return (
-    <View style={[styles.pageContainer, { paddingHorizontal: 20 }]}>
+    <View style={[styles.pageContainer, styles.beigeBackground, { paddingHorizontal: 20 }]}>
       <Text style={[styles.titleBlue, { alignSelf: "center", marginTop: -20}]}>Welcome, {name}!</Text>
       
       {/* row for search button and text */}

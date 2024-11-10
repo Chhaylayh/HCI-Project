@@ -14,6 +14,11 @@ export const styles = StyleSheet.create({
         width: "100%",
         height: "100%"
       },
+      stepContainer: {
+        paddingVertical: 10,
+        paddingHorizontal: 0,
+        marginBottom: 20,
+      },
       button: {
         backgroundColor: "darkblue",
         paddingVertical: 12,
@@ -118,5 +123,8 @@ export const styles = StyleSheet.create({
       itemText: {
         fontSize: 16,
         color: 'black',
+      },
+      beigeBackground: {
+        backgroundColor: '#f5f5dc',
       },
 })
