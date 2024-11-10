@@ -35,7 +35,7 @@ export default function CreateProject() {
         published: false,
         steps: [],
       }).then((result)=>{
-        Alert.alert("Success", "Project not created quite yet");
+        Alert.alert("Success", "Now you can add steps to your project");
         router.push({pathname: "/createProjectTwo", params:{projectId: result.id}});
       });
 

@@ -59,9 +59,7 @@ export default function Projects() {
   }, [app]);
 
   // filter out finished projects from projects list. ZO
-  const filteredProjects = Object.keys(projects).filter(
-    (key) => !finishedProjectIds.includes(key) && projects[key].published
-  );
+  const filteredProjects = Object.keys(projects);
 
   const navToProject = (id: string) => {
     // add [id, 0] to database?
@@ -80,6 +78,7 @@ export default function Projects() {
       <Text style={styles.titleBlue}>Projects</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {filteredProjects.map((key, i) => (
+          !finishedProjectIds.includes(key) && projects[key].published &&
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
             onPress={() => navToProject(key)}
