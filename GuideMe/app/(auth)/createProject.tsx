@@ -35,7 +35,7 @@ export default function CreateProject() {
         published: false,
         steps: [],
       }).then((result)=>{
-        Alert.alert("Success", "Project not created quite yet");
+        Alert.alert("Success", "Now you can add steps to your project");
         router.push({pathname: "/createProjectTwo", params:{projectId: result.id}});
       });
 
@@ -101,11 +101,6 @@ const localStyles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5dc',
-  },
-  backButton: {
-    fontSize: 18,
-    color: "#0000b0",
-    marginBottom: 20,
   },
   title: {
     fontSize: 36,

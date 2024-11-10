@@ -41,14 +41,17 @@ const CreateProjectTwo = () => {
     }
     try {
       Alert.alert("Success", "Project created successfully!");
-      router.push("createdProject"); // Navigate back to projects page
+      router.push("/createdProject"); // Navigate back to projects page
     } catch (error) {
       console.error("Error creating project:", error);
     }
   };
 
   const handleAddTask = () => {
-    router.push({pathname: "/newProjectTask", params: { projectId: initialProjectId }});
+    router.push({
+      pathname: "/newProjectTask",
+      params: { projectId: initialProjectId },
+    });
   };
 
   const taskPairs = [];
@@ -62,9 +65,6 @@ const CreateProjectTwo = () => {
     <ScrollView style={[localStyles.scrollView, styles.beigeBackground]}>
       <View style={[localStyles.container, styles.beigeBackground]}>
         <View style={[localStyles.header, styles.beigeBackground]}>
-          <Pressable onPress={() => router.back()} style={localStyles.backButton}>
-            <Text style={localStyles.backButtonText}>‹ Back</Text>
-          </Pressable>
           <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
         </View>
 
@@ -94,13 +94,23 @@ const CreateProjectTwo = () => {
             </View>
           ))}
 
-          <Pressable style={localStyles.addButton} onPress={handleAddTask}>
+          <Pressable style={[localStyles.addButton]} onPress={handleAddTask}>
             <Text style={localStyles.addButtonText}>+</Text>
           </Pressable>
         </View>
 
         <View style={localStyles.footer}>
-          <Pressable style={localStyles.publishButton} onPress={handleCreateProject}>
+          <Pressable
+            style={[
+              localStyles.publishButton,
+              {
+                backgroundColor:
+                  steps && steps.length > 0 ? "#0E0A68" : "#CCCCCC", // Gray out if disabled
+              },
+            ]}
+            onPress={(steps && steps.length > 0) ? handleCreateProject : ()=>Alert.alert("Add a step first")}
+            disabled={!(steps && steps.length > 0)}
+          >
             <Text style={localStyles.publishButtonText}>Publish Project →</Text>
           </Pressable>
         </View>
@@ -124,9 +134,6 @@ const localStyles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
-  },
-  backButton: {
-    marginBottom: 16,
   },
   backButtonText: {
     fontSize: 16,

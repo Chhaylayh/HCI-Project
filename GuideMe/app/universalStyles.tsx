@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: "bold",
         color: "darkblue",
+        textAlign: "center",
       },
       iconRow: {flexDirection:"row", justifyContent: "space-between"},
   

@@ -119,7 +119,7 @@ export default function Profile() {
           <>
             <Text style={[styles.itemText, { color: "darkblue"}]}>Member since {new Date(userData.accountDate).toLocaleString()}</Text>
             <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.score} Points</Text>
-            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.finishedProjects.length} Finished Projects</Text>
+            <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.finishedProjects && userData.finishedProjects.length} Finished Projects</Text>
             <Text style={[styles.itemText, { color: "darkblue"}]}>{userData.contributed.length} Contributed Projects</Text>
           </>
         )}
