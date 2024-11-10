@@ -83,7 +83,7 @@ export default function Projects() {
   return (
     <View style={[styles.pageContainer, styles.beigeBackground]}>
       <Text style={[styles.titleBlue, {textAlign: "center"}]}>Projects {(app && app !== "all") ? "for "+ app : ""}</Text>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {!loading && <ScrollView contentContainerStyle={styles.scrollContainer}>
         {( filteredProjects.length > 0) ? filteredProjects.map((key, i) => (
           <Pressable
             style={[styles.button, {marginVertical: 10}]}
@@ -92,8 +92,8 @@ export default function Projects() {
           >
             <Text style={styles.buttonText}>{projects[key].title}</Text>
           </Pressable>
-        )) : !loading && <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
-      </ScrollView>
+        )) : <Text style={styles.itemText}>You've completed all the projects for this app! Congratulations!</Text>}
+      </ScrollView>}
     </View>
   );
 }
