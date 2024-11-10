@@ -146,5 +146,6 @@ export default function Projects() {
       >
         <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
       </Pressable>
+    </View> : <></>
   );
 }
