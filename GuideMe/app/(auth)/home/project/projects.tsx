@@ -144,7 +144,7 @@ export default function Projects() {
         ]}
         onPress={() => router.push("/createProject")}
       >
-        <Text style={{ color: "white", fontSize: 20 }}>Create Project</Text>
+        <Text style={{ color: "white", fontSize: 20 }}>Create Own Project</Text>
       </Pressable>
     </View> : <></>
   );
