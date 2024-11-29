@@ -1,51 +1,54 @@
 import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
 import { styles } from "../../universalStyles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import tasks from "@/dbMocks/tasks";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase";
 import { StyleSheet } from "react-native";
-import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 
 export default function Search() {
   const [searchText, setSearchText] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<string[][]>([]); // Store project titles and IDs
   const [isSearched, setIsSearched] = useState(false);
-  const keys = Object.keys(tasks);
+  const [allProjects, setAllProjects] = useState<Record<string, any>>({});
+
+  // Fetch all projects on component load
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const projectDocs = await getDocs(collection(db, "projects"));
+      const projectsData: Record<string, any> = {};
+      projectDocs.forEach((doc) => {
+        projectsData[doc.id] = doc.data();
+      });
+      setAllProjects(projectsData);
+    };
+
+    fetchProjects();
+  }, []);
 
   const search = () => {
-    if (searchText.trim() === "") return; // don't search if input is empty
+    if (searchText.trim() === "") return; // Don't search if input is empty
 
-    let newSuggestions: string[] = [];
-    for (let key in keys) {
-      let possibleSuggestion = keys[key].toLowerCase();
-      if (possibleSuggestion.includes(searchText.toLowerCase())) {
-        newSuggestions.push(keys[key]);
-      }
-    }
+    const newSuggestions = Object.entries(allProjects)
+      .filter(([id, project]) =>
+        project.title.toLowerCase().includes(searchText.toLowerCase())
+      )
+      .map(([id, project]) => [project.title, id]);
 
     setSuggestions(newSuggestions);
     setIsSearched(true); // Mark that a search was performed
   };
 
-  const onClickSuggestion = (suggestionText: string) => {
-    const suggestionId = tasks[suggestionText].id;
-    router.setParams({ taskId: suggestionId });
-    router.push("/task");
+  const onClickSuggestion = (suggestion: string[]) => {
+    const suggestionId = suggestion[1];
+    router.push(`/home/project/${suggestionId}`);
   };
-
-  // Dummy additional results, just to display without functionality
-  const additionalResults = [
-    "How to install Visual Studio Code?",
-    "How to install Visual Studio Code Extension?",
-    "How to set up a computer?",
-  ];
 
   return (
     <View style={[styles.pageContainer, styles.beigeBackground]}>
-
       {/* Search Title */}
-      <Text style={localStyles.titleText}>Search</Text>
+      <Text style={localStyles.titleText}>Search Projects</Text>
 
       {/* Search Input */}
       <View style={[localStyles.inputContainer]}>
@@ -74,35 +77,25 @@ export default function Search() {
               onPress={() => onClickSuggestion(sug)}
               style={localStyles.suggestionButton}
             >
-              <Text style={localStyles.suggestionText}>{sug}</Text>
+              <Text style={localStyles.suggestionText}>{sug[0]}</Text>
             </Pressable>
           ))}
-
-          {/* Additional Static Suggestions */}
-          {additionalResults.map((result, i) => (
-            <View key={i} style={[localStyles.suggestionButton, { backgroundColor: "darkblue"}]}>
-              <Text style={localStyles.suggestionText}>{result}</Text>
-            </View>
-          ))}
         </ScrollView>
-      ) : <Text style={[styles.itemText, { color: "darkblue"}]}>Search for an app or task you're having trouble with!</Text>}
+      ) : (
+        <Text style={[styles.itemText, { color: "darkblue" }]}>
+          Search for a project to explore or continue!
+        </Text>
+      )}
 
       {/* No Results */}
       {isSearched && suggestions.length === 0 && (
-        <Text style={localStyles.noResultsText}>No results found</Text>
+        <Text style={localStyles.noResultsText}>No projects found</Text>
       )}
     </View>
   );
 }
 
 const localStyles = StyleSheet.create({
-  // Back button style
-  backText: {
-    fontSize: 18,
-    color: "darkblue",
-    marginLeft: 5,
-  },
-
   // Title text style
   titleText: {
     fontSize: 40,
@@ -140,8 +133,7 @@ const localStyles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 10,
-    marginTop: 30,  // Adding space between buttons
-    marginBottom: 30, // Adding space between buttons
+    marginTop: 10,
   },
   suggestionText: {
     color: "white",
