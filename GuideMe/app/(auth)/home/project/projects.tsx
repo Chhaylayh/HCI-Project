@@ -13,6 +13,7 @@ import {
   query,
   setDoc,
   where,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useContext, useEffect, useState } from "react";
@@ -85,6 +86,21 @@ export default function Projects() {
       ],
     });
   };
+  const cancelProject = async () => {
+    if (user?.uid && inProgress.length > 0) {
+      try {
+        const userRef = doc(collection(db, "users"), user.uid); // Clear the inProgress project in Firebase. ZO
+        await updateDoc(userRef, {
+          inProgress: [],
+        });
+
+        setInProgress([]); // Local is now empty. ZO
+
+      } catch (error) {
+        console.error("Error cancelling project:", error);
+      }
+    }
+  };
 
   return (inProgress ?
     <View
@@ -111,7 +127,7 @@ export default function Projects() {
           ]}
           onPress={() => continueProject(inProgress[0][1])}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Continue Project</Text>
+          <Text style={{ color: "white", fontSize: 20 }}>Continue Project: {inProgress[0][0]}</Text>
         </Pressable>
       )}
 
@@ -146,6 +162,13 @@ export default function Projects() {
       >
         <Text style={{ color: "white", fontSize: 20 }}>Create Own Project</Text>
       </Pressable>
+      {inProgress.length > 0 && (
+        <Pressable style={[styles.button, {backgroundColor: "#f28b82", marginBottom: 30},]}
+          onPress={cancelProject}
+        >
+          <Text style={{ color: "white", fontSize: 20 }}>Cancel Project: {inProgress[0][0]}</Text>
+        </Pressable>
+      )}
     </View> : <></>
   );
 }
