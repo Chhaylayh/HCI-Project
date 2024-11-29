@@ -110,6 +110,15 @@ export default function Profile() {
     });
     router.push(`/home/project/${id}`);
   };
+  const getAppImage = (appName: string) => {
+    const appImages: { [key: string]: string } = {
+      "VS Code": 'https://tidalcycles.org/assets/images/vscodeicon-42dc264fde2adb74cc197fe6d02b183c.png',
+      "ChatGPT": 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/2048px-ChatGPT_logo.svg.png',
+      "Discord": 'https://static.vecteezy.com/system/resources/previews/023/741/066/non_2x/discord-logo-icon-social-media-icon-free-png.png',
+      "Microsoft Excel": 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png', 
+    };
+    return appImages[appName];
+  };
 
   return (
     userData && (
@@ -130,12 +139,19 @@ export default function Profile() {
               key={i}
               style={[
                 styles.button,
-                { marginVertical: 10, backgroundColor: isAnyProjectInProgress ? "#CCCCCC" : "darkblue" },
+                {marginVertical: 10, width: 350, flexDirection: "row", alignItems: "center", padding: 10, backgroundColor: isAnyProjectInProgress ? "#CCCCCC" : "darkblue" },
               ]}
               onPress={() => isAnyProjectInProgress ? null : navToProject(key)}
               disabled={isAnyProjectInProgress}
             >
-              <Text style={styles.buttonText}>{projects[key].title}</Text>
+              <Image
+                source={{ uri: getAppImage(projects[key].app) }}
+                style={{ width: 50, height: 50, marginRight: 15 }}
+                resizeMode="contain"
+              />
+              <Text style={[styles.buttonText, { flex: 1 }]}>
+                {projects[key].title}
+              </Text>
             </Pressable>
           ))}
         </ScrollView>

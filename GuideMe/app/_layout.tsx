@@ -13,7 +13,9 @@ export default function RootLayout() {
   const [loggedIn, setLoggedIn] = useState<User | undefined>(undefined);
   return (
     <AuthContext.Provider value={{loggedIn, setLoggedIn}}>
-      <Slot />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Slot />
+      </Stack>
     </ AuthContext.Provider>
   );
 }

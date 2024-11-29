@@ -6,7 +6,7 @@ import { useEffect } from "react";
 export default function TabLayout() {
   onAuthStateChanged(auth, (user)=>{
     if (user) {
-      router.replace("/home");
+      router.replace("/home/dashboard");
     }
   })
     
