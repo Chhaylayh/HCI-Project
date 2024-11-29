@@ -1,35 +1,22 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  Alert,
-  ScrollView,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView, Modal, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { collection, addDoc, updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { collection, updateDoc, doc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "../universalStyles";
 
 const NewProjectTask = () => {
   const route = useRoute();
-  const navigation = useNavigation();
-  const { projectId } = route.params;
-  const [steps, setSteps] = useState({ title: "", description: "", imageURL: "" });
+  const { projectId, task, taskIndex } = route.params;
+  const [steps, setSteps] = useState(task ? task : { title: "", description: "", imageURL: "" });
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
 
-
-  const updateStep = (key: "description" | "title" | "imageURL", value: string) => {
-    const updatedStep = {...steps};
+  const updateStep = (key, value) => {
+    const updatedStep = { ...steps };
     updatedStep[key] = value;
     setSteps(updatedStep);
   };
@@ -45,40 +32,63 @@ const NewProjectTask = () => {
   };
 
   const handleCreateTask = async () => {
-    // Add the project to Firestore
-    await updateDoc(doc(collection(db, 'projects'), projectId), {
-      steps: arrayUnion(steps)
-    });
-    router.back();
+    try {
+      const projectRef = doc(collection(db, 'createProject'), projectId);
+      const projectDoc = await getDoc(projectRef);
+
+      if (projectDoc.exists()) {
+        const projectData = projectDoc.data();
+        let updatedSteps = projectData.steps || [];
+
+        if (taskIndex !== undefined) {
+          // Update existing task
+          updatedSteps[taskIndex] = steps;
+        } else {
+          // Add new task
+          updatedSteps.push(steps);
+        }
+
+        // Update Firestore
+        await updateDoc(projectRef, { steps: updatedSteps });
+
+        Alert.alert("Success", taskIndex !== undefined ? "Task updated successfully!" : "Task created successfully!");
+        router.back();
+      } else {
+        console.error("Error: Project not found.");
+      }
+    } catch (error) {
+      console.error("Error creating or updating task:", error);
+    }
   };
 
   const addImage = async () => {
-    const image = await ImagePicker.launchImageLibraryAsync()
+    const image = await ImagePicker.launchImageLibraryAsync();
     if (!image.canceled) {
-      updateStep("imageURL", image.assets[0].fileName || "Added an Image")
+      updateStep("imageURL", image.assets[0].fileName || "Added an Image");
     } else {
       Alert.alert("You did not select an image. Please try again.");
     }
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={[localStyles.container, styles.beigeBackground, { justifyContent: "center", flexGrow: 1 }]}>
-      <Text style={[localStyles.header, styles.beigeBackground, {textAlign: "center"}]}>New Project Task</Text>
+      <Text style={[localStyles.header, styles.beigeBackground, { textAlign: "center" }]}>New Project Task</Text>
 
       {steps && (
+        
         <View style={[localStyles.stepContainer, styles.beigeBackground]}>
           <Text style={localStyles.label}>Title:</Text>
+          
           <TextInput
             style={localStyles.pressableInput}
             value={steps.title}
             onChangeText={(text) => updateStep("title", text)}
             placeholder="Step title"
           />
+          
           <Text style={localStyles.label}>Description:</Text>
-          <Pressable
-            onPress={() => openDescriptionModal()}
-            style={[localStyles.pressableInput]}
-          >
+          
+          <Pressable onPress={() => openDescriptionModal()} style={[localStyles.pressableInput]}>
             <TextInput
               style={localStyles.input}
               value={steps.description}
@@ -88,49 +98,47 @@ const NewProjectTask = () => {
             />
           </Pressable>
 
-          <Pressable
-            style={[localStyles.imageButton, {backgroundColor: "white"}]}
-            onPress={() => addImage()}
-          >
+          <Pressable style={[localStyles.imageButton, { backgroundColor: "white" }]} onPress={() => addImage()}>
             <Ionicons name="image-outline" size={20} color="blue" />
+            
             <Text style={localStyles.imageButtonText}>
               {steps.imageURL ? steps.imageURL.substring(0, 40) : "Add an image"}
             </Text>
+            
           </Pressable>
         </View>
       )}
 
-      <Pressable style={[localStyles.createButton, { backgroundColor: "darkblue"}]} onPress={handleCreateTask}>
+      <Pressable style={[localStyles.createButton, { backgroundColor: "darkblue" }]} onPress={handleCreateTask}>
         <Text style={localStyles.createButtonText}>Create Task</Text>
       </Pressable>
 
       <Modal
-  visible={descriptionModalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={() => setDescriptionModalVisible(false)}
->
-  <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style={localStyles.modalContainer}
-  >
-    <View style={localStyles.modalContent}>
-      <Text style={localStyles.modalHeader}>Enter Description</Text>
-      <TextInput
-        style={localStyles.modalInput}
-        value={tempDescription}
-        onChangeText={setTempDescription}
-        placeholder="Add a description"
-        multiline={true}
-        autoFocus={true} 
-      />
-      <Pressable style={localStyles.saveButton} onPress={saveDescription}>
-        <Text style={localStyles.saveButtonText}>Save</Text>
-      </Pressable>
-    </View>
-  </KeyboardAvoidingView>
-</Modal>
-
+        visible={descriptionModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDescriptionModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={localStyles.modalContainer}
+        >
+          <View style={localStyles.modalContent}>
+            <Text style={localStyles.modalHeader}>Enter Description</Text>
+            <TextInput
+              style={localStyles.modalInput}
+              value={tempDescription}
+              onChangeText={setTempDescription}
+              placeholder="Add a description"
+              multiline={true}
+              autoFocus={true}
+            />
+            <Pressable style={localStyles.saveButton} onPress={saveDescription}>
+              <Text style={localStyles.saveButtonText}>Save</Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </ScrollView>
   );
 };
@@ -141,14 +149,13 @@ const localStyles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   pressableInput: {
-    ...StyleSheet.flatten([this.input]),
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#0000b0",
     borderRadius: 5,
-    padding: 8,
-    marginBottom: 10,
-    overflow: "hidden",
+    padding: 12, // Increased padding for more space
+    marginBottom: 20, // Add more space between inputs
+    height: 75, // Set a larger height for the input field
   },
   header: {
     fontSize: 36,
@@ -167,18 +174,15 @@ const localStyles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
-    marginBottom: 10,
+    height: 150, // Adjust for multiline descriptions
+    textAlignVertical: "top", // Ensure text aligns at the top for multiline
+    marginBottom: 20,
   },
   stepContainer: {
     backgroundColor: "#f0f0f0",
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
-  },
-  stepTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
   imageButton: {
     flexDirection: "row",
@@ -212,7 +216,7 @@ const localStyles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '90%', 
+    width: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -225,7 +229,7 @@ const localStyles = StyleSheet.create({
   },
   modalInput: {
     width: '100%',
-    minHeight: 100, 
+    minHeight: 100,
     borderWidth: 1,
     borderColor: '#0000b0',
     borderRadius: 5,

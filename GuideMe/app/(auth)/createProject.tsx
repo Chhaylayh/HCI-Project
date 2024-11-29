@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { collection, addDoc, doc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { styles } from "../universalStyles";
 
@@ -27,33 +27,33 @@ export default function CreateProject() {
 
     try {
       // Add the project to Firestore
-      addDoc(collection(db, "projects"), {
+      const docRef = await addDoc(collection(db, "createProject"), {
         app: selectedApp,
         author: user?.uid,
-        title: projectName,
+        projectName: projectName,
+        projectType: projectType,
         date: new Date().getTime(),
         published: false,
         steps: [],
-      }).then((result)=>{
-        Alert.alert("Success", "Now you can add steps to your project");
-        router.push({pathname: "/createProjectTwo", params:{projectId: result.id}});
       });
-
-      
+      // Pass projectId and projectName when navigating
+      router.push({
+        pathname: "/createProjectTwo",
+        params: { projectId: docRef.id, projectName },
+      });
     } catch (error) {
       console.error("Error creating project:", error);
       Alert.alert("Error", "Failed to create project");
     }
   };
 
-    return (
-        <View style={[localStyles.container, styles.beigeBackground]}>
-
+  return (
+    <View style={[localStyles.container, styles.beigeBackground]}>
       <Text style={localStyles.title}>Create a Project</Text>
 
       <Text style={localStyles.label}>Project Name:</Text>
       <TextInput
-        style={[localStyles.input, {backgroundColor: "white"}]}
+        style={[localStyles.input, { backgroundColor: "white" }]}
         placeholder="Write a Short Story with ChatGPT"
         value={projectName}
         onChangeText={setProjectName}
@@ -88,19 +88,21 @@ export default function CreateProject() {
         </Picker>
       </View>
 
-            <Pressable style={localStyles.nextButton} onPress={() => handleCreateProject()
-            }>
-                <Text style={localStyles.nextButtonText}>Next</Text>
-            </Pressable>
-        </View>
-    );
+      <Pressable
+        style={localStyles.nextButton}
+        onPress={() => handleCreateProject()}
+      >
+        <Text style={localStyles.nextButtonText}>Next</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5dc',
+    backgroundColor: "#f5f5dc",
   },
   title: {
     fontSize: 36,

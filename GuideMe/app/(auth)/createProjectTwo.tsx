@@ -8,42 +8,71 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
+import { useRoute } from "@react-navigation/native";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { router } from "expo-router";
 import { TaskStep } from "@/dbMocks/tasks";
-import { styles } from "../universalStyles";
+import { useIsFocused } from "@react-navigation/native";
 
 const CreateProjectTwo = () => {
-  const navigation = useNavigation();
   const route = useRoute();
   const { projectId: initialProjectId } = route.params;
   const [projectName, setProjectName] = useState("");
-  const [steps, setSteps] = useState<TaskStep[]>();
+  const [steps, setSteps] = useState<TaskStep[]>([]);
   const user = auth.currentUser;
+  const isFocused = useIsFocused(); // Hook to know when the screen is focused
 
   useEffect(() => {
-    const projectRef = doc(collection(db, "projects"), initialProjectId);
-    getDoc(projectRef).then((pDoc) => {
-      if (pDoc.exists()) {
-        setProjectName(pDoc.data().projectName);
-        setSteps(pDoc.data().steps);
+    if (isFocused) {
+      fetchProjectData();
+    }
+  }, [isFocused, initialProjectId]);
+
+  const fetchProjectData = async () => {
+    try {
+      const projectRef = doc(db, "createProject", initialProjectId);
+      const projectDoc = await getDoc(projectRef);
+
+      if (projectDoc.exists()) {
+        const projectData = projectDoc.data();
+        setProjectName(projectData.projectName || "Untitled Project");
+        setSteps(projectData.steps || []);
       } else {
-        console.error("error: project not found");
+        console.error("Project not found");
+        createNewProject(projectRef);
       }
-    });
-  });
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
+
+  const createNewProject = async (projectRef) => {
+    try {
+      await setDoc(projectRef, {
+        projectName: "New Project",
+        steps: [],
+        userId: user ? user.uid : null, // Associate with the current user if authenticated
+      });
+      setProjectName("New Project");
+      setSteps([]);
+    } catch (error) {
+      console.error("Error creating new project:", error);
+      Alert.alert("Error", "Unable to create a new project.");
+    }
+  };
 
   const handleCreateProject = async () => {
-    if (!steps) {
+    if (!steps || steps.length === 0) {
+      Alert.alert("Add Steps", "Please add at least one step to proceed.");
       return;
     }
+
     try {
-      Alert.alert("Success", "Project created successfully!");
-      router.push("/createdProject"); // Navigate back to projects page
+      // Navigate to the next screen or confirm project creation
+      router.push("/createdProject");
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("Error finalizing project:", error);
     }
   };
 
@@ -51,6 +80,13 @@ const CreateProjectTwo = () => {
     router.push({
       pathname: "/newProjectTask",
       params: { projectId: initialProjectId },
+    });
+  };
+
+  const handleEditTask = (step, index) => {
+    router.push({
+      pathname: "/newProjectTask",
+      params: { projectId: initialProjectId, task: step, taskIndex: index },
     });
   };
 
@@ -62,10 +98,10 @@ const CreateProjectTwo = () => {
   }
 
   return (
-    <ScrollView style={[localStyles.scrollView, styles.beigeBackground]}>
-      <View style={[localStyles.container, styles.beigeBackground]}>
-        <View style={[localStyles.header, styles.beigeBackground]}>
-          <Text style={[localStyles.title, { fontSize: 36, textAlign: "center"}]}>Write a Short Story with ChatGPT</Text>
+    <ScrollView style={[localStyles.scrollView]}>
+      <View style={[localStyles.container]}>
+        <View style={[localStyles.header]}>
+          <Text style={[localStyles.title]}>{projectName}</Text>
         </View>
 
         <View style={localStyles.taskContainer}>
@@ -75,19 +111,13 @@ const CreateProjectTwo = () => {
                 <Pressable
                   key={i}
                   style={localStyles.taskButton}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/newProjectTask",
-                      params: { projectId: initialProjectId },
-                    })
-                  } // Navigate to the corresponding route
+                  onPress={() => handleEditTask(step, rowIndex * 2 + i)}
                 >
                   <View style={localStyles.taskButtonContent}>
                     <Text style={localStyles.taskButtonText}>{step.title}</Text>
                   </View>
                 </Pressable>
               ))}
-              {/* Add empty space if the row has only one item */}
               {pair.length === 1 && (
                 <View style={[localStyles.taskButton, localStyles.emptyTask]} />
               )}
@@ -108,7 +138,7 @@ const CreateProjectTwo = () => {
                   steps && steps.length > 0 ? "#0E0A68" : "#CCCCCC", // Gray out if disabled
               },
             ]}
-            onPress={(steps && steps.length > 0) ? handleCreateProject : ()=>Alert.alert("Add a step first")}
+            onPress={handleCreateProject}
             disabled={!(steps && steps.length > 0)}
           >
             <Text style={localStyles.publishButtonText}>Publish Project →</Text>
@@ -125,25 +155,20 @@ const taskButtonSize = (windowWidth - 60) / 2;
 const localStyles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5dc",
   },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   header: {
     marginBottom: 24,
   },
-  backButtonText: {
-    fontSize: 16,
-    color: "#666",
-  },
   title: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 24,
-    color: "darkblue",
   },
   taskContainer: {
     flex: 1,
@@ -158,7 +183,7 @@ const localStyles = StyleSheet.create({
   taskButton: {
     width: taskButtonSize,
     height: taskButtonSize,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 12,
     alignItems: "center",
@@ -182,18 +207,18 @@ const localStyles = StyleSheet.create({
     width: "100%",
   },
   addButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#ddd",
-    justifyContent: "center",
+    width: "100%",
+    height: "auto",
+    backgroundColor: "#fff",
+    borderRadius: 12,
     alignItems: "center",
-    alignSelf: "center",
-    marginTop: 12,
+    justifyContent: "center",
+    marginVertical: 10,
+    padding: 10,
   },
   addButtonText: {
-    fontSize: 24,
-    color: "#666",
+    fontSize: 40,
+    color: "#000",
   },
   footer: {
     marginTop: "auto",
