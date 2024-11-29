@@ -24,6 +24,7 @@ export default function CreateProject() {
       setLoading(true);
       if (!projectName.trim()) {
         Alert.alert("Error", "Please enter a project name");
+        setLoading(false);
         return;
       }
   
@@ -45,6 +46,7 @@ export default function CreateProject() {
         });
       } catch (error) {
         console.error("Error creating project:", error);
+        setLoading(false);
         Alert.alert("Error", "Failed to create project");
       }
     }
@@ -82,7 +84,7 @@ export default function CreateProject() {
         style={localStyles.nextButton}
         onPress={() => handleCreateProject()}
       >
-        <Text style={localStyles.nextButtonText}>Next</Text>
+        <Text style={localStyles.nextButtonText}>{loading ? "Loading..." : "Next"}</Text>
       </Pressable>
     </View>
   );

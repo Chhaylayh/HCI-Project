@@ -68,7 +68,7 @@ const CreateProjectTwo = () => {
 
     try {
       // Navigate to the next screen or confirm project creation
-      router.push("/createdProject");
+      router.replace("/createdProject");
     } catch (error) {
       console.error("Error finalizing project:", error);
     }
@@ -104,21 +104,25 @@ const CreateProjectTwo = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert(
-        "Are you sure you want to leave this page without submitting?",
-        "You could lose your progress",
-        [
-          { text: "Cancel", style: "cancel", onPress: () => {} },
-          {
-            text: "Leave",
-            style: "destructive",
-            onPress: () => {
-              navigation.dispatch(e.data.action);
+      console.log(e.data.action.type);
+      if (e.data.action.type === "POP" || e.data.action.type === "GO_BACK") {
+        e.preventDefault();
+        Alert.alert(
+          "Are you sure you want to leave this page without submitting?",
+          "You could lose your progress",
+          [
+            { text: "Cancel", style: "cancel", onPress: () => {} },
+            {
+              text: "Leave",
+              style: "destructive",
+              onPress: () => {
+                navigation.dispatch(e.data.action);
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+        
+      }
     });
     return unsubscribe;
   });
