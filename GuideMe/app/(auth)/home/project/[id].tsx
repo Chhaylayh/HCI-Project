@@ -118,7 +118,7 @@ export default function Project() {
           inProgress: updatedInProgress,
           finishedProjects: updatedFinishedProjects,
         });
-        router.replace("/home");
+        router.push("/");
       }
     } catch (error) {
       console.error("Error finishing project:", error);
@@ -143,7 +143,7 @@ export default function Project() {
               <Text style={styles.buttonText}>{stepCompleted ? "Completed" : "Mark as Complete"}</Text>
             </Pressable>
             <View style={styles.rowContainer}>
-              <Pressable style={[styles.buttonLarge, { marginTop: 10, marginRight: 60, width: 150 }]} onPress={() => router.push("/home")}>
+              <Pressable style={[styles.buttonLarge, { marginTop: 10, marginRight: 60, width: 150 }]} onPress={() => router.push("/")}>
                 <Text style={styles.buttonText}>Home</Text>
               </Pressable>
               <Pressable 
