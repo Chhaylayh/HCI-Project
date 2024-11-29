@@ -23,14 +23,13 @@ export default function Projects() {
   const [inProgress, setInProgress] = useState<string[][]>([]);
 
   useEffect(() => {
-    if (user?.uid && inProgress.length > 0) {
+    if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
       getDoc(docRef)
         .then((uDoc) => {
           if (uDoc.exists()) {
             const data = uDoc.data();
-            console.log(inProgress);
-            if (data.inProgress[0]) {
+            if (data.inProgress.length > 0 && data.inProgress[0]) {
               const projectRef = doc(
                 collection(db, "projects"),
                 typeof data.inProgress[0] === "string"
