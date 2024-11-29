@@ -16,35 +16,39 @@ import { styles } from "../universalStyles";
 export default function CreateProject() {
   const [projectName, setProjectName] = useState("");
   const [selectedApp, setSelectedApp] = useState("ChatGPT"); // Default to ChatGPT
-  const [projectType, setProjectType] = useState("Project"); // Default to "Project"
+  const [loading, setLoading] = useState(false);
   const user = auth.currentUser;
 
   const handleCreateProject = async () => {
-    if (!projectName.trim()) {
-      Alert.alert("Error", "Please enter a project name");
-      return;
+    if (!loading) {
+      setLoading(true);
+      if (!projectName.trim()) {
+        Alert.alert("Error", "Please enter a project name");
+        return;
+      }
+  
+      try {
+        // Add the project to Firestore
+        const docRef = await addDoc(collection(db, "draftProjects"), {
+          app: selectedApp,
+          author: user?.uid,
+          title: projectName,
+          date: new Date().getTime(),
+          published: false,
+          steps: [],
+        });
+        // Pass projectId and projectName when navigating
+        setLoading(false);
+        router.push({
+          pathname: "/createProjectTwo",
+          params: { projectId: docRef.id, projectName , key: ""},
+        });
+      } catch (error) {
+        console.error("Error creating project:", error);
+        Alert.alert("Error", "Failed to create project");
+      }
     }
-
-    try {
-      // Add the project to Firestore
-      const docRef = await addDoc(collection(db, "createProject"), {
-        app: selectedApp,
-        author: user?.uid,
-        projectName: projectName,
-        projectType: projectType,
-        date: new Date().getTime(),
-        published: false,
-        steps: [],
-      });
-      // Pass projectId and projectName when navigating
-      router.push({
-        pathname: "/createProjectTwo",
-        params: { projectId: docRef.id, projectName },
-      });
-    } catch (error) {
-      console.error("Error creating project:", error);
-      Alert.alert("Error", "Failed to create project");
-    }
+    
   };
 
   return (
@@ -74,20 +78,6 @@ export default function CreateProject() {
           <Picker.Item label="Microsoft Teams" value="Microsoft Teams" />
         </Picker>
       </View>
-
-      <Text style={localStyles.label}>Project Type</Text>
-      <View style={localStyles.pickerContainer}>
-        <Picker
-          selectedValue={projectType}
-          onValueChange={(itemValue) => setProjectType(itemValue)}
-          style={localStyles.picker}
-          mode="dropdown"
-        >
-          <Picker.Item label="Project" value="Project" />
-          <Picker.Item label="Task" value="Task" />
-        </Picker>
-      </View>
-
       <Pressable
         style={localStyles.nextButton}
         onPress={() => handleCreateProject()}

@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView, Modal, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { collection, updateDoc, doc, arrayUnion, getDoc } from "firebase/firestore";
+import { collection, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
@@ -10,12 +21,19 @@ import { styles } from "../universalStyles";
 
 const NewProjectTask = () => {
   const route = useRoute();
-  const { projectId, task, taskIndex } = route.params;
-  const [steps, setSteps] = useState(task ? task : { title: "", description: "", imageURL: "" });
+  const { projectId, title, description, imageURL, taskIndex } = route.params;
+  const [steps, setSteps] = useState(
+    title
+      ? { title: title, description: description, imageURL: imageURL }
+      : { title: "", description: "", imageURL: "" }
+  );
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
 
-  const updateStep = (key, value) => {
+  const updateStep = (
+    key: "description" | "title" | "imageURL",
+    value: string
+  ) => {
     const updatedStep = { ...steps };
     updatedStep[key] = value;
     setSteps(updatedStep);
@@ -32,32 +50,46 @@ const NewProjectTask = () => {
   };
 
   const handleCreateTask = async () => {
-    try {
-      const projectRef = doc(collection(db, 'createProject'), projectId);
-      const projectDoc = await getDoc(projectRef);
+    if (steps.title == "" || steps.description == "") {
+      alert(
+        `Please add a ${
+          steps.title === "" ? "title" : "description"
+        } before submitting your task.`
+      );
+    } else {
+      try {
+        const projectRef = doc(collection(db, "draftProjects"), projectId);
+        const projectDoc = await getDoc(projectRef);
 
-      if (projectDoc.exists()) {
-        const projectData = projectDoc.data();
-        let updatedSteps = projectData.steps || [];
+        if (projectDoc.exists()) {
+          const projectData = projectDoc.data();
+          setSteps(projectData.taskIndex);
+          let updatedSteps = projectData.steps || [];
 
-        if (taskIndex !== undefined) {
-          // Update existing task
-          updatedSteps[taskIndex] = steps;
+          if (taskIndex !== undefined) {
+            // Update existing task
+            updatedSteps[taskIndex] = steps;
+          } else {
+            // Add new task
+            updatedSteps.push(steps);
+          }
+
+          // Update Firestore
+          await updateDoc(projectRef, { steps: updatedSteps });
+
+          Alert.alert(
+            "Success",
+            taskIndex !== undefined
+              ? "Task updated successfully!"
+              : "Task created successfully!"
+          );
+          router.back();
         } else {
-          // Add new task
-          updatedSteps.push(steps);
+          console.error("Error: Project not found.");
         }
-
-        // Update Firestore
-        await updateDoc(projectRef, { steps: updatedSteps });
-
-        Alert.alert("Success", taskIndex !== undefined ? "Task updated successfully!" : "Task created successfully!");
-        router.back();
-      } else {
-        console.error("Error: Project not found.");
+      } catch (error) {
+        console.error("Error creating or updating task:", error);
       }
-    } catch (error) {
-      console.error("Error creating or updating task:", error);
     }
   };
 
@@ -71,24 +103,40 @@ const NewProjectTask = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={[localStyles.container, styles.beigeBackground, { justifyContent: "center", flexGrow: 1 }]}>
-      <Text style={[localStyles.header, styles.beigeBackground, { textAlign: "center" }]}>New Project Task</Text>
+    <ScrollView
+      contentContainerStyle={[
+        localStyles.container,
+        styles.beigeBackground,
+        { justifyContent: "center", flexGrow: 1 },
+      ]}
+    >
+      <Text
+        style={[
+          localStyles.header,
+          styles.beigeBackground,
+          { textAlign: "center" },
+        ]}
+      >
+        {title ? "Edit Project Task" : "New Project Task"}
+      </Text>
 
       {steps && (
-        
         <View style={[localStyles.stepContainer, styles.beigeBackground]}>
           <Text style={localStyles.label}>Title:</Text>
-          
+
           <TextInput
             style={localStyles.pressableInput}
             value={steps.title}
             onChangeText={(text) => updateStep("title", text)}
             placeholder="Step title"
           />
-          
+
           <Text style={localStyles.label}>Description:</Text>
-          
-          <Pressable onPress={() => openDescriptionModal()} style={[localStyles.pressableInput]}>
+
+          <Pressable
+            onPress={() => openDescriptionModal()}
+            style={[localStyles.pressableInput]}
+          >
             <TextInput
               style={localStyles.input}
               value={steps.description}
@@ -98,19 +146,28 @@ const NewProjectTask = () => {
             />
           </Pressable>
 
-          <Pressable style={[localStyles.imageButton, { backgroundColor: "white" }]} onPress={() => addImage()}>
+          <Pressable
+            style={[localStyles.imageButton, { backgroundColor: "white" }]}
+            onPress={() => addImage()}
+          >
             <Ionicons name="image-outline" size={20} color="blue" />
-            
+
             <Text style={localStyles.imageButtonText}>
-              {steps.imageURL ? steps.imageURL.substring(0, 40) : "Add an image"}
+              {steps.imageURL
+                ? steps.imageURL.substring(0, 40)
+                : "Add an image"}
             </Text>
-            
           </Pressable>
         </View>
       )}
 
-      <Pressable style={[localStyles.createButton, { backgroundColor: "darkblue" }]} onPress={handleCreateTask}>
-        <Text style={localStyles.createButtonText}>Create Task</Text>
+      <Pressable
+        style={[localStyles.createButton, { backgroundColor: "darkblue" }]}
+        onPress={handleCreateTask}
+      >
+        <Text style={localStyles.createButtonText}>
+          {title ? "Update Task" : "Create Task"}
+        </Text>
       </Pressable>
 
       <Modal
@@ -211,41 +268,41 @@ const localStyles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: '90%',
-    backgroundColor: 'white',
+    width: "90%",
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalHeader: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
   },
   modalInput: {
-    width: '100%',
+    width: "100%",
     minHeight: 100,
     borderWidth: 1,
-    borderColor: '#0000b0',
+    borderColor: "#0000b0",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     marginBottom: 20,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   saveButton: {
-    backgroundColor: '#0000b0',
+    backgroundColor: "#0000b0",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   saveButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
 });

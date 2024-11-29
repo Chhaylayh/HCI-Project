@@ -11,7 +11,7 @@ import {
 import { useRoute } from "@react-navigation/native";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { TaskStep } from "@/dbMocks/tasks";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -20,7 +20,6 @@ const CreateProjectTwo = () => {
   const { projectId: initialProjectId } = route.params;
   const [projectName, setProjectName] = useState("");
   const [steps, setSteps] = useState<TaskStep[]>([]);
-  const user = auth.currentUser;
   const isFocused = useIsFocused(); // Hook to know when the screen is focused
 
   useEffect(() => {
@@ -31,26 +30,25 @@ const CreateProjectTwo = () => {
 
   const fetchProjectData = async () => {
     try {
-      const projectRef = doc(db, "createProject", initialProjectId);
+      const projectRef = doc(db, "draftProjects", initialProjectId);
       const projectDoc = await getDoc(projectRef);
 
       if (projectDoc.exists()) {
         const projectData = projectDoc.data();
-        setProjectName(projectData.projectName || "Untitled Project");
-        setSteps(projectData.steps || []);
+        setProjectName(projectData.title || "Untitled Project");
+        setSteps(projectData.steps);
       } else {
         console.error("Project not found");
-        createNewProject(projectRef);
       }
     } catch (error) {
       console.error("Error fetching project data:", error);
     }
   };
 
-  const createNewProject = async (projectRef) => {
+  /*const createNewProject = async (projectRef) => {
     try {
       await setDoc(projectRef, {
-        projectName: "New Project",
+        title: "New Project",
         steps: [],
         userId: user ? user.uid : null, // Associate with the current user if authenticated
       });
@@ -60,7 +58,7 @@ const CreateProjectTwo = () => {
       console.error("Error creating new project:", error);
       Alert.alert("Error", "Unable to create a new project.");
     }
-  };
+  };*/
 
   const handleCreateProject = async () => {
     if (!steps || steps.length === 0) {
@@ -86,7 +84,13 @@ const CreateProjectTwo = () => {
   const handleEditTask = (step, index) => {
     router.push({
       pathname: "/newProjectTask",
-      params: { projectId: initialProjectId, task: step, taskIndex: index },
+      params: {
+        projectId: initialProjectId,
+        title: step.title,
+        description: step.description,
+        imageURL: step.imageURL,
+        taskIndex: index,
+      },
     });
   };
 
@@ -96,6 +100,28 @@ const CreateProjectTwo = () => {
       taskPairs.push(steps.slice(i, i + 2));
     }
   }
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      e.preventDefault();
+      Alert.alert(
+        "Are you sure you want to leave this page without submitting?",
+        "You could lose your progress",
+        [
+          { text: "Cancel", style: "cancel", onPress: () => {} },
+          {
+            text: "Leave",
+            style: "destructive",
+            onPress: () => {
+              navigation.dispatch(e.data.action);
+            },
+          },
+        ]
+      );
+    });
+    return unsubscribe;
+  });
 
   return (
     <ScrollView style={[localStyles.scrollView]}>
