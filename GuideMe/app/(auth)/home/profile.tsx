@@ -220,18 +220,18 @@ export default function Profile() {
         <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
           {name}'s GuideMe Stats
         </Text>
-        <Text style={[styles.buttonTextLight, { color: "darkblue" }]}>
+        <Text style={[styles.buttonTextLight, { color: "darkblue", fontSize: 20, marginBottom: 2 }]}>
           {userData.score} Points
         </Text>
-        <Text style={[styles.buttonTextLight, { color: "darkblue" }]}>
+        <Text style={[styles.buttonTextLight, { color: "darkblue", fontSize: 20, marginBottom: 2 }]}>
           {userData.finishedProjects && userData.finishedProjects.length}{" "}
           Finished Projects
         </Text>
-        <Text style={[styles.buttonTextLight, { color: "darkblue" }]}>
+        <Text style={[styles.buttonTextLight, { color: "darkblue", fontSize: 20, marginBottom: 2 }]}>
           {userData.contributed.length} Contributed Projects
         </Text>
 
-        {filteredProjects.length > 1 && <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
+        {userData.finishedProjects.length && <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
         {name}'s Finished Projects
         </Text>}
         <ScrollView contentContainerStyle={styles.scrollContainer}>

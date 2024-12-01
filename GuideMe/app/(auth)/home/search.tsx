@@ -2,7 +2,7 @@ import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
 import { styles } from "../../universalStyles";
 import { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
@@ -15,7 +15,7 @@ export default function Search() {
   // Fetch all projects on component load
   useEffect(() => {
     const fetchProjects = async () => {
-      const projectDocs = await getDocs(collection(db, "projects"));
+      const projectDocs = await getDocs(query(collection(db, "projects"), where("published", "==", true)));
       const projectsData: Record<string, any> = {};
       projectDocs.forEach((doc) => {
         projectsData[doc.id] = doc.data();
@@ -33,9 +33,10 @@ export default function Search() {
       return;
     }
 
+    const lowerCaseText = text.toLowerCase();
     const newSuggestions = Object.entries(allProjects)
       .filter(([id, project]) =>
-        project.title.toLowerCase().includes(text.toLowerCase())
+        project.title.toLowerCase().includes(lowerCaseText) || project.app.toLowerCase().includes(lowerCaseText)
       )
       .map(([id, project]) => [project.title, id]);
 
