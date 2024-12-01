@@ -10,7 +10,6 @@ import { router } from "expo-router";
 export default function Search() {
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[][]>([]); // Store project titles and IDs
-  const [isSearched, setIsSearched] = useState(false);
   const [allProjects, setAllProjects] = useState<Record<string, any>>({});
 
   // Fetch all projects on component load
@@ -27,17 +26,20 @@ export default function Search() {
     fetchProjects();
   }, []);
 
-  const search = () => {
-    if (searchText.trim() === "") return; // Don't search if input is empty
+  // Search function
+  const search = (text: string) => {
+    if (text.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
 
     const newSuggestions = Object.entries(allProjects)
       .filter(([id, project]) =>
-        project.title.toLowerCase().includes(searchText.toLowerCase())
+        project.title.toLowerCase().includes(text.toLowerCase())
       )
       .map(([id, project]) => [project.title, id]);
 
     setSuggestions(newSuggestions);
-    setIsSearched(true); // Mark that a search was performed
   };
 
   const onClickSuggestion = (suggestion: string[]) => {
@@ -57,19 +59,16 @@ export default function Search() {
           value={searchText}
           onChangeText={(text) => {
             setSearchText(text);
-            setIsSearched(false); // Reset suggestions when typing
+            search(text); // Call search function while typing
           }}
           autoCapitalize="none"
-          onSubmitEditing={search}
           style={localStyles.textInput}
         />
-        <Pressable onPress={() => search()}>
-          <Ionicons name="search" size={32} />
-        </Pressable>
+        <Ionicons name="search" size={32} />
       </View>
 
       {/* Suggestions */}
-      {isSearched && suggestions.length > 0 ? (
+      {suggestions.length > 0 ? (
         <ScrollView style={localStyles.suggestionsContainer}>
           {suggestions.map((sug, i) => (
             <Pressable
@@ -88,7 +87,7 @@ export default function Search() {
       )}
 
       {/* No Results */}
-      {isSearched && suggestions.length === 0 && (
+      {searchText && suggestions.length === 0 && (
         <Text style={localStyles.noResultsText}>No projects found</Text>
       )}
     </View>
