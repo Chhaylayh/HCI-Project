@@ -95,7 +95,29 @@ export default function Project() {
       }
     }
   };
+  const handlePreviousStep = async () => {
+    if (currentStepIndex > 0) {
+      const user = auth.currentUser;
+      if (!user || !project) return;
 
+      const userRef = doc(collection(db, "users"), user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const updatedInProgress = userData?.inProgress.map((p: { id: string, step: number }) => {
+          if (p.id === id) {
+            return { ...p, step: currentStepIndex - 1 };
+          }
+          return p;
+        });
+
+        await updateDoc(userRef, { inProgress: updatedInProgress });
+        setCurrentStepIndex((prevIndex) => prevIndex - 1);
+        setStepCompleted(false);
+      }
+    }
+  };
   const finishProject = async () => {
     const user = auth.currentUser;
     const userRef = doc(collection(db, "users"), user?.uid);
@@ -118,7 +140,7 @@ export default function Project() {
           inProgress: updatedInProgress,
           finishedProjects: updatedFinishedProjects,
         });
-        router.replace("/home");
+        router.push("/");
       }
     } catch (error) {
       console.error("Error finishing project:", error);
@@ -139,12 +161,20 @@ export default function Project() {
             {project.steps[currentStepIndex].imageURL && (
               <Image source={{ uri: project.steps[currentStepIndex].imageURL }} style={styles.imageStyle} />
             )}
-            <Pressable style={[styles.buttonLarge, { marginTop: 50, width: 360, backgroundColor: stepCompleted ? "green" : "#f28b82", }]} onPress={toggleStatus}>
-              <Text style={styles.buttonText}>{stepCompleted ? "Completed" : "Mark as Complete"}</Text>
+            <Pressable style={[styles.buttonLarge, { marginTop: 10, width: 360, backgroundColor: stepCompleted ? "green" : "#f28b82", }]} onPress={toggleStatus}>
+              <Text style={styles.buttonText}>
+                {stepCompleted
+                ? `Step ${currentStepIndex + 1} of ${project.steps.length} Completed`
+                : `Mark Step ${currentStepIndex + 1} of ${project.steps.length} as Complete`}
+              </Text>
             </Pressable>
             <View style={styles.rowContainer}>
-              <Pressable style={[styles.buttonLarge, { marginTop: 10, marginRight: 60, width: 150 }]} onPress={() => router.push("/home")}>
-                <Text style={styles.buttonText}>Home</Text>
+              <Pressable
+                style={[ styles.buttonLarge, { marginTop: 10, marginRight: 60, width: 150, backgroundColor: currentStepIndex > 0 ? "darkblue" : "#CCCCCC" } ]} // grey out if on the first step. ZO
+                onPress={handlePreviousStep}
+                disabled={currentStepIndex === 0}
+              >
+                <Text style={styles.buttonText}>Previous Step</Text>
               </Pressable>
               <Pressable 
                 style={[ styles.buttonLarge, { marginTop: 10, width: 150, backgroundColor: stepCompleted ? "darkblue" : "#CCCCCC" }]} // grey out until complete. ZO 
@@ -157,6 +187,9 @@ export default function Project() {
             </View>
           </View>
         </ScrollView>
+        <Pressable style={[styles.buttonLarge, { marginTop: 20, width: 360, backgroundColor: "darkblue" }]} onPress={() => router.push("/")}> 
+          <Text style={styles.buttonText}>Home</Text>
+        </Pressable>
       </View>
     )
   );
