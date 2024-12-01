@@ -69,7 +69,7 @@ export default function Dashboard() {
         <Pressable
           style={{
             backgroundColor: 'darkblue',
-            paddingVertical: 15,
+            paddingVertical: 25,
             borderRadius: 10,
             alignItems: 'center',
             justifyContent: 'center',

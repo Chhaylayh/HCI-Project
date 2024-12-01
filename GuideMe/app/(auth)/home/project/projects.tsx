@@ -136,7 +136,7 @@ export default function Projects() {
           ]}
           onPress={() => continueProject(inProgress[0][1])}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Continue Project: {inProgress[0][0]}</Text>
+          <Text style={styles.buttonTextLight}>Continue Project: {inProgress[0][0]}</Text>
         </Pressable>
       )}
 
@@ -159,7 +159,7 @@ export default function Projects() {
         }}
         disabled={inProgress.length > 0} // Disable button click if there's a project in progress
       >
-        <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
+        <Text style={styles.buttonTextLight}>Start Project</Text>
       </Pressable>
 
       <Pressable
@@ -169,13 +169,13 @@ export default function Projects() {
         ]}
         onPress={() => router.push("/createProject")}
       >
-        <Text style={{ color: "white", fontSize: 20 }}>Create Own Project</Text>
+        <Text style={styles.buttonTextLight}>Create Own Project</Text>
       </Pressable>
       {inProgress.length > 0 && (
         <Pressable style={[styles.button, {backgroundColor: "#f28b82", marginBottom: 30},]}
           onPress={cancelProject}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Cancel Project: {inProgress[0][0]}</Text>
+          <Text style={styles.buttonTextLight}>Cancel Project: {inProgress[0][0]}</Text>
         </Pressable>
       )}
     </View>) : <></>;

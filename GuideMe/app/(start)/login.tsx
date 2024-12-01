@@ -68,8 +68,8 @@ export default function Login() {
         Don't have an account?{" "}
       </Text>
       {/* Sign Up Button */}
-      <Pressable style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+      <Pressable style={styles.secondaryButton} onPress={handleSignUp}>
+        <Text style={styles.secondaryButtonText}>Sign Up</Text>
       </Pressable>
     </View>
   );

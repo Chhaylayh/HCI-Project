@@ -14,6 +14,7 @@ import { db, auth } from "@/firebase";
 import { router, useNavigation } from "expo-router";
 import { TaskStep } from "@/dbMocks/tasks";
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from "../universalStyles";
 
 const CreateProjectTwo = () => {
   const route = useRoute();
@@ -131,9 +132,10 @@ const CreateProjectTwo = () => {
     <ScrollView style={[localStyles.scrollView]}>
       <View style={[localStyles.container]}>
         <View style={[localStyles.header]}>
-          <Text style={[localStyles.title]}>{projectName}</Text>
-        </View>
-
+          <Text style={styles.titleBlue}>{projectName}</Text>
+          </View>
+        {taskPairs.length === 0 ? <Text style={[styles.buttonTextLight, { color: "darkblue", marginBottom: 10}]}>Click the + Button to add the first step to your project!</Text> : <Text style={[styles.buttonText, {marginTop: 10, marginBottom: 10, color: "darkblue"}]}>Current Steps</Text>
+        }
         <View style={localStyles.taskContainer}>
           {taskPairs.map((pair, rowIndex) => (
             <View key={rowIndex} style={localStyles.taskRow}>
@@ -148,14 +150,12 @@ const CreateProjectTwo = () => {
                   </View>
                 </Pressable>
               ))}
-              {pair.length === 1 && (
-                <View style={[localStyles.taskButton, localStyles.emptyTask]} />
-              )}
+              
             </View>
           ))}
 
-          <Pressable style={[localStyles.addButton]} onPress={handleAddTask}>
-            <Text style={localStyles.addButtonText}>+</Text>
+          <Pressable style={[localStyles.addButton, {backgroundColor: taskPairs.length > 0 ? "white" : "darkblue"}]} onPress={handleAddTask}>
+            <Text style={[localStyles.addButtonText, {color: taskPairs.length > 0 ? "darkblue" : "white"}]}>+</Text>
           </Pressable>
         </View>
 
@@ -171,7 +171,7 @@ const CreateProjectTwo = () => {
             onPress={handleCreateProject}
             disabled={!(steps && steps.length > 0)}
           >
-            <Text style={localStyles.publishButtonText}>Publish Project →</Text>
+            <Text style={localStyles.publishButtonText}>Publish Project </Text>
           </Pressable>
         </View>
       </View>
@@ -214,7 +214,7 @@ const localStyles = StyleSheet.create({
     width: taskButtonSize,
     height: taskButtonSize,
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 10,
     padding: 12,
     alignItems: "center",
     justifyContent: "center",

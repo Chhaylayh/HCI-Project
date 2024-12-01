@@ -41,13 +41,13 @@ export default function Login() {
           });
           console.log("Document written with ID: ", docRef);
         } catch (e) {
-          console.error("Error adding document: ", e);
+          // console.error("Error adding document: ", e);
         }
         router.replace('/home/dashboard')
       })
       .catch((error) => {
         Alert.alert("Error", "Please try again");
-        console.error(error);
+        //console.error(error);
       });
   };
   const handleLogin = () => {
@@ -88,8 +88,8 @@ export default function Login() {
         Already have an account?{" "}
       </Text>
       {/* Sign Up Button */}
-      <Pressable style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Log In</Text>
+      <Pressable style={styles.secondaryButton} onPress={handleLogin}>
+        <Text style={styles.secondaryButtonText}>Log In</Text>
       </Pressable>
     </View>
   );
