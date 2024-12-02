@@ -26,38 +26,43 @@ export default function Projects() {
   useEffect(() => {
     if (user?.uid) {
       const docRef = doc(collection(db, "users"), user?.uid);
-      getDoc(docRef).then((uDoc) => {
-        if (uDoc.exists()) {
-          const data = uDoc.data();
-          console.log(inProgress);
-          const projectRef = doc(
-            collection(db, "projects"),
-            typeof data.inProgress[0] === "string"
-              ? data.inProgress[0]
-              : data.inProgress[0].id
-          );
-          getDoc(projectRef).then((pDoc) => {
-            if (pDoc.exists()) {
-              const pData: ProjectType = pDoc.data() as ProjectType;
-              if (pData) {
-                setInProgress([
-                  ...inProgress,
-                  [
-                    pData.title,
-                    typeof data.inProgress[0] === "string"
-                      ? data.inProgress[0]
-                      : data.inProgress[0].id,
-                  ],
-                ]);
-              }
-            } else {
-              console.error("error: project not found");
+      getDoc(docRef)
+        .then((uDoc) => {
+          if (uDoc.exists()) {
+            const data = uDoc.data();
+            if (data.inProgress.length > 0 && data.inProgress[0]) {
+              const projectRef = doc(
+                collection(db, "projects"),
+                typeof data.inProgress[0] === "string"
+                  ? data.inProgress[0]
+                  : data.inProgress[0].id
+              );
+              getDoc(projectRef).then((pDoc) => {
+                if (pDoc.exists()) {
+                  const pData: ProjectType = pDoc.data() as ProjectType;
+                  if (pData) {
+                    setInProgress([
+                      ...inProgress,
+                      [
+                        pData.title,
+                        typeof data.inProgress[0] === "string"
+                          ? data.inProgress[0]
+                          : data.inProgress[0].id,
+                      ],
+                    ]);
+                  }
+                } else {
+                  //console.error("error: project not found");
+                }
+              });
             }
-          });
-        } else {
-          console.error("error: user not found");
-        }
-      });
+          } else {
+            //console.error("error: user not found");
+          }
+        })
+        .catch((error) => {
+          console.error("error fetching data");
+        });
     }
   }, [user]);
 
@@ -102,9 +107,13 @@ export default function Projects() {
     }
   };
 
-  return (inProgress ?
+  return inProgress ? (
     <View
-      style={[styles.container, styles.beigeBackground, { paddingHorizontal: 20, paddingVertical: 40 }]}
+      style={[
+        styles.container,
+        styles.beigeBackground,
+        { paddingHorizontal: 20, paddingVertical: 40 },
+      ]}
     >
       {/* Title */}
       <Text
@@ -127,31 +136,31 @@ export default function Projects() {
           ]}
           onPress={() => continueProject(inProgress[0][1])}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Continue Project: {inProgress[0][0]}</Text>
+          <Text style={styles.buttonTextLight}>Continue Project: {inProgress[0][0]}</Text>
         </Pressable>
       )}
 
       {/* Start Project Button */}
-    <Pressable
-      style={[
-        styles.button,
-        {
-          backgroundColor: inProgress.length > 0 ? "#CCCCCC" : 'darkblue', // Gray out if disabled
-          marginBottom: 30,
-        },
-      ]}
-      onPress={() => {
-        if (inProgress.length === 0) {
-          router.push({
-            pathname: "/home/project/browseProjects",
-            params: { app: "all" },
-          });
-        }
-      }}
-      disabled={inProgress.length > 0} // Disable button click if there's a project in progress
-    >
-      <Text style={{ color: "white", fontSize: 20 }}>Start Project</Text>
-    </Pressable>
+      <Pressable
+        style={[
+          styles.button,
+          {
+            backgroundColor: inProgress.length > 0 ? "#CCCCCC" : "darkblue", // Gray out if disabled
+            marginBottom: 30,
+          },
+        ]}
+        onPress={() => {
+          if (inProgress.length === 0) {
+            router.push({
+              pathname: "/home/project/browseProjects",
+              params: { app: "all" },
+            });
+          }
+        }}
+        disabled={inProgress.length > 0} // Disable button click if there's a project in progress
+      >
+        <Text style={styles.buttonTextLight}>Start Project</Text>
+      </Pressable>
 
       <Pressable
         style={[
@@ -160,15 +169,14 @@ export default function Projects() {
         ]}
         onPress={() => router.push("/createProject")}
       >
-        <Text style={{ color: "white", fontSize: 20 }}>Create Own Project</Text>
+        <Text style={styles.buttonTextLight}>Create Own Project</Text>
       </Pressable>
       {inProgress.length > 0 && (
         <Pressable style={[styles.button, {backgroundColor: "#f28b82", marginBottom: 30},]}
           onPress={cancelProject}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Cancel Project: {inProgress[0][0]}</Text>
+          <Text style={styles.buttonTextLight}>Cancel Project: {inProgress[0][0]}</Text>
         </Pressable>
       )}
-    </View> : <></>
-  );
+    </View>) : <></>;
 }

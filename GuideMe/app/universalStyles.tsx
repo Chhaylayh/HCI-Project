@@ -23,15 +23,21 @@ export const styles = StyleSheet.create({
         backgroundColor: "darkblue",
         paddingVertical: 12,
         paddingHorizontal: 25,
-        borderRadius: 5,
+        borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
-        width: "100%",
+        width: "100%"
       },
       buttonText: {
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
+        textAlign: "center"
+      },
+      buttonTextLight: {
+        color: "white",
+        fontSize: 18,
+        textAlign: "center"
       },
       secondaryButton: {
         backgroundColor: "white",
@@ -105,13 +111,11 @@ export const styles = StyleSheet.create({
         width: '100%',
       },
       buttonLarge: {
-        width: 100,
-        height: 100,
-        marginBottom: 20,
         backgroundColor: 'darkblue',
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingVertical: 15,
         borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       item: {
         backgroundColor: 'white',
