@@ -196,13 +196,13 @@ export default function Project() {
                       {
                         flex: 1,
                         marginRight: 5,
-                        backgroundColor:"darkblue"
+                        backgroundColor: currentStepIndex==0 ? "#CCCCCC" : "darkblue",
                       },
                     ]} // grey out until complete. ZO
                     disabled={currentStepIndex===0}
                     onPress={handlePreviousStep}
                   >
-                    <Text style={styles.buttonText}>Back</Text>
+                    <Text style={styles.buttonText}>Previous Step</Text>
                   </Pressable>
                 
                 <Pressable

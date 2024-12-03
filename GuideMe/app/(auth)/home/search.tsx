@@ -1,16 +1,18 @@
-import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import { styles } from "../../universalStyles";
 import { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/firebase";
+import { collection, getDocs, query, where, updateDoc, arrayUnion, doc, getDoc } from "firebase/firestore";
+import { db, auth } from "@/firebase";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 
 export default function Search() {
   const [searchText, setSearchText] = useState("");
-  const [suggestions, setSuggestions] = useState<string[][]>([]); // Store project titles and IDs
+  const [suggestions, setSuggestions] = useState<{ title: string; id: string; icon: string }[]>([]); // Store project titles and IDs
   const [allProjects, setAllProjects] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(false);
+  const [inProgressProject, setInProgressProject] = useState<string | null>(null);
 
   // Fetch all projects on component load
   useEffect(() => {
@@ -22,9 +24,31 @@ export default function Search() {
       });
       setAllProjects(projectsData);
     };
-
+    const fetchUserData = async () => { // reuse fetching so user can see their inProgress project status (grey out feature). ZO
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(collection(db, "users"), user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const inProgress = userData.inProgress || [];
+          setInProgressProject(inProgress.length > 0 ? inProgress[0].id : null);
+        }
+      }
+    };
+    fetchUserData();
     fetchProjects();
   }, []);
+
+  const getAppImage = (appName: string) => {
+    const appImages: { [key: string]: string } = {
+      "VS Code": 'https://tidalcycles.org/assets/images/vscodeicon-42dc264fde2adb74cc197fe6d02b183c.png',
+      "ChatGPT": 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/2048px-ChatGPT_logo.svg.png',
+      "Discord": 'https://static.vecteezy.com/system/resources/previews/023/741/066/non_2x/discord-logo-icon-social-media-icon-free-png.png',
+      "Microsoft Excel": 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png', 
+    };
+    return appImages[appName];
+  };
 
   // Search function
   const search = (text: string) => {
@@ -38,14 +62,37 @@ export default function Search() {
       .filter(([id, project]) =>
         project.title.toLowerCase().includes(lowerCaseText) || project.app.toLowerCase().includes(lowerCaseText)
       )
-      .map(([id, project]) => [project.title, id]);
+      .map(([id, project]) => ({
+        title: project.title,
+        id,
+        icon: getAppImage(project.app), // Add app icon. ZO
+      }));
 
     setSuggestions(newSuggestions);
   };
 
-  const onClickSuggestion = (suggestion: string[]) => {
-    const suggestionId = suggestion[1];
-    router.push(`/home/project/${suggestionId}`);
+  const onClickSuggestion = async (suggestionId: string) => {
+    if (inProgressProject) {
+      alert("You already have a project in progress. Please finish it first!");
+      return;
+    }
+    setLoading(true); // Start loading
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("User not authenticated");
+
+      const userRef = doc(collection(db, "users"), user.uid);
+      await updateDoc(userRef, {
+        inProgress: arrayUnion({ id: suggestionId, step: 0 }),
+      });
+
+      router.push(`/home/project/${suggestionId}`);
+    } catch (error) {
+      console.error("Error starting project:", error);
+      alert("Failed to start the project. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   return (
@@ -74,10 +121,15 @@ export default function Search() {
           {suggestions.map((sug, i) => (
             <Pressable
               key={i}
-              onPress={() => onClickSuggestion(sug)}
-              style={localStyles.suggestionButton}
+              onPress={() => onClickSuggestion(sug.id)}
+              style={[styles.button, {marginVertical: 10, flexDirection: "row", alignItems: "center", padding: 10, backgroundColor: inProgressProject ? "#CCCCCC" : "darkblue",}]}
             >
-              <Text style={localStyles.suggestionText}>{sug[0]}</Text>
+              <Image
+                source={{ uri: sug.icon }}
+                style={localStyles.iconStyle}
+                resizeMode="contain"
+              />
+              <Text style={localStyles.suggestionText}>{sug.title}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -148,5 +200,10 @@ const localStyles = StyleSheet.create({
     fontSize: 18,
     color: "red",
     textAlign: "center",
+  },
+  iconStyle: {
+    width: 50,
+    height: 50,
+    marginRight: 15,
   },
 });
