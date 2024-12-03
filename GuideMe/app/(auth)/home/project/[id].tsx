@@ -104,7 +104,7 @@ export default function Project() {
         setCurrentStepIndex((prevIndex) => prevIndex + 1); // else move to next step. ZO
         setStepCompleted(false);
       } else {
-        console.warn("Step not marked as complete");
+        alert("You must mark this step as complete to continue!");
       }
     }
   };
@@ -129,6 +129,9 @@ export default function Project() {
         setCurrentStepIndex((prevIndex) => prevIndex - 1);
         setStepCompleted(false);
       }
+    }
+    else {
+      alert("This is the project's first step!");
     }
   };
   const finishProject = async () => {
@@ -196,13 +199,13 @@ export default function Project() {
                       {
                         flex: 1,
                         marginRight: 5,
-                        backgroundColor:"darkblue"
+                        backgroundColor: currentStepIndex==0 ? "#CCCCCC" : "darkblue",
                       },
                     ]} // grey out until complete. ZO
-                    disabled={currentStepIndex===0}
+                    //disabled={currentStepIndex===0}
                     onPress={handlePreviousStep}
                   >
-                    <Text style={styles.buttonText}>Back</Text>
+                    <Text style={styles.buttonText}>Previous Step</Text>
                   </Pressable>
                 
                 <Pressable

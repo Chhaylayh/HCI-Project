@@ -251,10 +251,13 @@ export default function Profile() {
                     : "darkblue",
                 },
               ]}
-              onPress={() =>
-                isAnyProjectInProgress ? null : navToProject(key)
-              }
-              disabled={isAnyProjectInProgress}
+              onPress={() => {
+                if (!isAnyProjectInProgress) { // only want one project at a time. alert if tapped again. ZO
+                  navToProject(key);
+                } else {
+                  alert("You already have a project in progress. Please finish it first!");
+                }
+              }}
             >
               <Image
                 source={{ uri: getAppImage(projects[key].app) }}

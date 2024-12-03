@@ -156,8 +156,11 @@ export default function Projects() {
               params: { app: "all" },
             });
           }
+          else {
+            alert("You already have a project in progress. Please finish it first!");
+          }
         }}
-        disabled={inProgress.length > 0} // Disable button click if there's a project in progress
+        //disabled={inProgress.length > 0} // Disable button click if there's a project in progress
       >
         <Text style={styles.buttonTextLight}>Start Project</Text>
       </Pressable>
