@@ -46,8 +46,17 @@ export default function Login() {
         router.replace('/home/dashboard')
       })
       .catch((error) => {
-        Alert.alert("Error", "Please try again");
-        //console.error(error);
+        //Alert.alert("Error", error.message);
+        if (error.code === 'auth/invalid-email') {
+          Alert.alert('Invalid Email. Please re-enter your email address.')
+        }
+        else if (error.code === 'auth/email-already-in-use') {
+          Alert.alert('Email already in use. Try logging in instead.')
+        } else if (error.code === 'auth/weak-password') {
+          Alert.alert('Please enter a password that is at least 6 characters long.')
+        } else {
+          Alert.alert("Error", "Please try again");
+        }
       });
   };
   const handleLogin = () => {
