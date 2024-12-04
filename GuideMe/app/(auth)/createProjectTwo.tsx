@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,30 +8,33 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-import { router, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import { TaskStep } from "@/dbMocks/tasks";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "../universalStyles";
 
 const CreateProjectTwo = () => {
-  const route = useRoute();
-  const { projectId: initialProjectId } = route.params;
+  // const route = useRoute();
+  const { projectId: initialProjectId } = useLocalSearchParams();
   const [projectName, setProjectName] = useState("");
   const [steps, setSteps] = useState<TaskStep[]>([]);
-  const isFocused = useIsFocused(); // Hook to know when the screen is focused
+  //const isFocused = useIsFocused(); // Hook to know when the screen is focused
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isFocused) {
       fetchProjectData();
     }
-  }, [isFocused, initialProjectId]);
+  }, [isFocused, initialProjectId]);*/
+
+  useFocusEffect(useCallback(()=>{
+    fetchProjectData();
+  }, []));
 
   const fetchProjectData = async () => {
     try {
-      const projectRef = doc(db, "draftProjects", initialProjectId);
+      const projectRef = doc(collection(db, "draftProjects"), initialProjectId);
       const projectDoc = await getDoc(projectRef);
 
       if (projectDoc.exists()) {
@@ -45,21 +48,6 @@ const CreateProjectTwo = () => {
       console.error("Error fetching project data:", error);
     }
   };
-
-  /*const createNewProject = async (projectRef) => {
-    try {
-      await setDoc(projectRef, {
-        title: "New Project",
-        steps: [],
-        userId: user ? user.uid : null, // Associate with the current user if authenticated
-      });
-      setProjectName("New Project");
-      setSteps([]);
-    } catch (error) {
-      console.error("Error creating new project:", error);
-      Alert.alert("Error", "Unable to create a new project.");
-    }
-  };*/
 
   const handleCreateProject = async () => {
     if (!steps || steps.length === 0) {
@@ -101,6 +89,7 @@ const CreateProjectTwo = () => {
       taskPairs.push(steps.slice(i, i + 2));
     }
   }
+
   const navigation = useNavigation();
 
   useEffect(() => {
