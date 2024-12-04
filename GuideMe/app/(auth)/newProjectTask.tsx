@@ -15,13 +15,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { collection, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRoute } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "../universalStyles";
 
 const NewProjectTask = () => {
-  const route = useRoute();
-  const { projectId, title, description, imageURL, taskIndex } = route.params;
+  const { projectId, title, description, imageURL, taskIndex } = useLocalSearchParams();
   const [steps, setSteps] = useState(
     title
       ? { title: title, description: description, imageURL: imageURL }
