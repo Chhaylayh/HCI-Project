@@ -24,10 +24,16 @@ export default function Login() {
     }
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      router.replace('/home/dashboard')
+      if (userCredential) {
+        router.replace('/home/dashboard')
+      }
     })
-    .catch(() => {
-      Alert.alert("Error", "Please try again");
+    .catch((error) => {
+      if (error.code == "auth/invalid-credential") {
+        Alert.alert("Error", "Incorrect username or password. Please try again.");
+      } else {
+        Alert.alert("Error", "Please try again");
+      }
     });
   };
   const handleSignUp = () => {
