@@ -14,7 +14,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { collection, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "../universalStyles";
 
@@ -81,6 +81,7 @@ const NewProjectTask = () => {
               ? "Task updated successfully!"
               : "Task created successfully!"
           );
+          router.back();
         } else {
           console.error("Error: Project not found.");
         }
