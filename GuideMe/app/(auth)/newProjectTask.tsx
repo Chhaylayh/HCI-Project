@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,13 +14,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { collection, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import { useRoute } from "@react-navigation/native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "../universalStyles";
 
 const NewProjectTask = () => {
-  const { projectId, title, description, imageURL, taskIndex } = useLocalSearchParams();
+  const { projectId, title, description, imageURL, taskIndex } =
+    useLocalSearchParams();
   const [steps, setSteps] = useState(
     title
       ? { title: title, description: description, imageURL: imageURL }
@@ -62,7 +62,6 @@ const NewProjectTask = () => {
 
         if (projectDoc.exists()) {
           const projectData = projectDoc.data();
-          setSteps(projectData.taskIndex);
           let updatedSteps = projectData.steps || [];
 
           if (taskIndex !== undefined) {
@@ -82,7 +81,6 @@ const NewProjectTask = () => {
               ? "Task updated successfully!"
               : "Task created successfully!"
           );
-          router.back();
         } else {
           console.error("Error: Project not found.");
         }
@@ -124,7 +122,7 @@ const NewProjectTask = () => {
           <Text style={localStyles.label}>Title:</Text>
 
           <TextInput
-            style={localStyles.pressableInput}
+            style={localStyles.textInput}
             value={steps.title}
             onChangeText={(text) => updateStep("title", text)}
             placeholder="Step title"
@@ -133,21 +131,17 @@ const NewProjectTask = () => {
           <Text style={localStyles.label}>Description:</Text>
 
           <Pressable
-            onPress={() => openDescriptionModal()}
-            style={[localStyles.pressableInput]}
+            onPress={openDescriptionModal}
+            style={localStyles.pressableInput}
           >
-            <TextInput
-              style={localStyles.input}
-              value={steps.description}
-              placeholder="Add a description"
-              editable={false}
-              pointerEvents="none"
-            />
+            <Text style={localStyles.descriptionText}>
+              {steps.description || "Add a description"}
+            </Text>
           </Pressable>
 
           <Pressable
             style={[localStyles.imageButton, { backgroundColor: "white" }]}
-            onPress={() => addImage()}
+            onPress={addImage}
           >
             <Ionicons name="image-outline" size={20} color="blue" />
 
@@ -204,14 +198,28 @@ const localStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
+  textInput: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#0000b0",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
   pressableInput: {
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#0000b0",
     borderRadius: 5,
-    padding: 12, // Increased padding for more space
-    marginBottom: 20, // Add more space between inputs
-    height: 75, // Set a larger height for the input field
+    padding: 10,
+    height: 150,
+    justifyContent: "flex-start",
+    marginBottom: 20,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: "#000",
+    textAlignVertical: "top",
   },
   header: {
     fontSize: 36,
@@ -223,16 +231,6 @@ const localStyles = StyleSheet.create({
     fontSize: 18,
     marginVertical: 5,
     color: "darkblue",
-  },
-  input: {
-    borderWidth: 0,
-    borderColor: "#0000b0",
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-    height: 150, // Adjust for multiline descriptions
-    textAlignVertical: "top", // Ensure text aligns at the top for multiline
-    marginBottom: 20,
   },
   stepContainer: {
     backgroundColor: "#f0f0f0",
