@@ -140,9 +140,9 @@ export default function Search() {
       )}
 
       {/* No Results */}
-      {searchText && suggestions.length === 0 && (
+      {(searchText && suggestions.length === 0) ? (
         <Text style={localStyles.noResultsText}>No projects found</Text>
-      )}
+      ) : null}
     </View>
   );
 }

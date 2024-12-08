@@ -195,7 +195,7 @@ export default function Profile() {
   };
 
   return (
-    userData && (
+    userData ? (
       <View
         style={[
           styles.container,
@@ -209,14 +209,14 @@ export default function Profile() {
         >
           {name}
         </Text>
-        {userData.accountDate && (
+        {userData.accountDate ? (
             <Text
               style={[styles.itemText, { color: "darkblue", marginBottom: 10 }]}
             >
               GuideMe user since{" "}
               {new Date(userData.accountDate).toLocaleString()}
             </Text>
-        )}
+        ) : null}
         <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
           {name}'s GuideMe Stats
         </Text>
@@ -231,9 +231,9 @@ export default function Profile() {
           {userData.contributed.length} Contributed Projects
         </Text>
 
-        {userData.finishedProjects.length && <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
+        {userData.finishedProjects.length ? <Text style={[styles.titleBlue, { fontSize: 24, marginTop: 20, marginBottom: 10 }]}>
         {name}'s Finished Projects
-        </Text>}
+        </Text> : null}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {filteredProjects.map((key, i) => (
             <Pressable
@@ -288,6 +288,6 @@ export default function Profile() {
           <Text style={styles.buttonText}>Log Out</Text>
         </Pressable>
       </View>
-    )
+    ) : null
   );
 }
