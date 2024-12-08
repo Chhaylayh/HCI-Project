@@ -176,9 +176,9 @@ export default function Project() {
           <View key={currentStepIndex} style={[styles.stepContainer, { alignItems: "stretch" }]}>
             <Text style={[styles.buttonText, { color: "darkblue", textAlign: "center", fontSize: 30, textDecorationLine: "underline" }]}>Step {currentStepIndex + 1}: {project.steps[currentStepIndex].title}</Text>
             <Text style={[styles.buttonText, { color: "darkblue", textAlign: "center", fontSize: 20, fontWeight: "300" }]}>{project.steps[currentStepIndex].description}</Text>
-            {project.steps[currentStepIndex].imageURL && (
+            {project.steps[currentStepIndex].imageURL ? (
               <Image source={{ uri: project.steps[currentStepIndex].imageURL }} style={styles.imageStyle} />
-            )}
+            ) : null}
     
             
               

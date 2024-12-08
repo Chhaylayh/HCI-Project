@@ -118,7 +118,7 @@ const NewProjectTask = () => {
         {title ? "Edit Project Task" : "New Project Task"}
       </Text>
 
-      {steps && (
+      {steps ? (
         <View style={[localStyles.stepContainer, styles.beigeBackground]}>
           <Text style={localStyles.label}>Title:</Text>
 
@@ -153,7 +153,7 @@ const NewProjectTask = () => {
             </Text>
           </Pressable>
         </View>
-      )}
+      ) : null}
 
       <Pressable
         style={[localStyles.createButton, { backgroundColor: "darkblue" }]}
